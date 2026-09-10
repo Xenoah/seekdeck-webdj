@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0f14">
+  <meta name="description" content="SeekDeck — ローカル音源でミックス。自由に配置できる4デッキ、波形、MIDI Learn、保存できるワークスペース。">
+  <title>SeekDeck — Local mixing studio</title>
+  <link rel="icon" type="image/svg+xml" href="./icon.svg">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <header class="app-header">
+    <a class="brand" href="./" aria-label="SeekDeck ホーム"><svg viewBox="0 0 32 32" aria-hidden="true"><ellipse cx="16" cy="16" rx="14" ry="7" transform="rotate(-38 16 16)"/><circle cx="16" cy="16" r="4"/></svg>SeekDeck</a>
+    <span class="header-divider"></span><span class="workspace-label">PERFORMANCE</span>
+    <div class="header-spacer"></div><span class="local-badge">LOCAL AUDIO</span>
+    <button id="audio-start" class="button subtle">オーディオ開始</button>
+    <button data-action="settings" class="button icon-button" aria-label="設定">⚙</button>
+    <button data-action="import" class="button primary">＋ 音源を追加</button>
+  </header>
+  <nav class="workspace-toolbar" aria-label="ワークスペース">
+    <div class="view-switch" role="group" aria-label="レイアウト"><button data-preset="two" class="active">2 DECK</button><button data-preset="four">4 DECK</button><button data-preset="focus">FOCUS</button></div>
+    <button data-action="layout" class="button subtle" id="layout-toggle">▦ 配置を編集</button>
+    <button data-action="layouts" class="button subtle">ワークスペース</button>
+    <span id="save-status" class="save-status" role="status">読み込み中</span>
+    <div class="header-spacer"></div><button data-action="midi" class="button subtle" id="midi-status">MIDI</button><button data-action="record" class="button subtle" id="record-button"><span class="record-dot"></span> REC</button><button data-action="help" class="button icon-button" aria-label="使い方と対応機能">?</button>
+  </nav>
+  <div id="layout-tools" class="layout-tools" hidden></div>
+  <main id="workspace" class="workspace" aria-label="DJワークスペース"><div class="boot-state"><span class="orbit-mark">◎</span><h1>ミックスを、あなたの配置で。</h1><p>音源とワークスペースを準備しています。</p></div></main>
+  <footer class="status-bar"><span id="engine-status">AUDIO STANDBY</span><span id="latency-status">出力遅延 —</span><span id="active-status"></span><span class="header-spacer"></span><span id="storage-status">音源はこの端末内で処理</span><button data-action="help">ショートカット ↗</button></footer>
+  <input type="file" id="audio-files" accept="audio/*,.mp3,.wav,.flac,.aiff,.aif,.m4a,.ogg,.opus,.aac" multiple hidden>
+  <input type="file" id="json-file" accept=".json,application/json" hidden>
+  <input type="file" id="xml-file" accept=".xml,text/xml,application/xml" hidden>
+  <div id="toasts" class="toasts" role="status" aria-live="polite"></div>
+  <dialog id="dialog"><div id="dialog-content"></div></dialog>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

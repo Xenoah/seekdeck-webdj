@@ -1,0 +1,7 @@
+import fs from 'node:fs';import path from 'node:path';import {spawnSync} from 'node:child_process';
+const root=path.resolve('dist'),files=fs.readdirSync(root,{recursive:true}).filter(x=>fs.statSync(path.join(root,x)).isFile());let errors=[];
+for(const file of files){const full=path.join(root,file);if(file.endsWith('.js')){const r=spawnSync(process.execPath,['--check',full],{encoding:'utf8'});if(r.status)errors.push(`${file}: ${r.stderr}`);const text=fs.readFileSync(full,'utf8');for(const m of text.matchAll(/(?:from\s+|new URL\()(['"])(\.\.?\/[^'"]+)\1/g)){const dest=path.resolve(path.dirname(full),m[2]);if(!fs.existsSync(dest))errors.push(`${file}: missing ${m[2]}`);}}}
+const html=fs.readFileSync(path.join(root,'index.html'),'utf8');for(const m of html.matchAll(/(?:src|href)="(\.\/[^"?#]+)"/g))if(!fs.existsSync(path.join(root,m[1])))errors.push(`index.html: missing ${m[1]}`);
+const sw=fs.readFileSync(path.join(root,'sw.js'),'utf8');for(const m of sw.matchAll(/'\.\/([^']+)'/g))if(!fs.existsSync(path.join(root,m[1])))errors.push(`sw.js: missing ${m[1]}`);
+if(fs.existsSync('.openai/hosting.json')){const manifest=JSON.parse(fs.readFileSync('.openai/hosting.json','utf8'));if(!manifest.project_id||manifest.static?.directory!=='dist')errors.push('Invalid hosting identity/output');}
+if(errors.length){console.error(errors.join('\n'));process.exit(1);}console.log(`Validated ${files.length} static files, module syntax, local references, offline cache, and optional hosting manifest.`);
