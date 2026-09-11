@@ -6,6 +6,7 @@ export const putTrack=t=>op('tracks','readwrite',s=>s.put(t));
 export const getAudio=id=>op('audio','readonly',s=>s.get(id));
 export const getState=()=>op('state','readonly',s=>s.get('session'));
 export const putState=s=>op('state','readwrite',o=>o.put(s,'session'));
+export async function commitLibrary(tracks,state){const db=await database();return new Promise((resolve,reject)=>{const tx=db.transaction(['tracks','state'],'readwrite');try{for(const t of tracks)tx.objectStore('tracks').put(t);tx.objectStore('state').put(state,'session');}catch(error){tx.abort();reject(error);return;}tx.oncomplete=resolve;tx.onabort=tx.onerror=()=>reject(tx.error||new Error('ライブラリの保存が中断されました。'));});}
 export async function storeTrack(t,blob){const db=await database();return new Promise((resolve,reject)=>{const tx=db.transaction(['tracks','audio'],'readwrite');tx.objectStore('tracks').put(t);tx.objectStore('audio').put(blob,t.id);tx.oncomplete=resolve;tx.onabort=tx.onerror=()=>reject(tx.error);});}
 export async function deleteTrack(id){const db=await database();return new Promise((resolve,reject)=>{const tx=db.transaction(['tracks','audio'],'readwrite');tx.objectStore('tracks').delete(id);tx.objectStore('audio').delete(id);tx.oncomplete=resolve;tx.onabort=tx.onerror=()=>reject(tx.error);});}
 export async function storageInfo(){if(!navigator.storage?.estimate)return null;return await navigator.storage.estimate();}

@@ -19,7 +19,7 @@ export async function runMobile(browser,url){
   await page.locator('[data-panel=deck3] [data-action=play]').tap();
   await page.locator('[data-mobile-view=mixer]').tap();
   assert.equal(await page.locator('[data-channel="3"]').isVisible(),true);
-  await page.locator('#crossfader').fill('0.4');
+  await page.locator('#crossfader').evaluate(el=>{el.value='.4';el.dispatchEvent(new Event('input',{bubbles:true}));});
   await page.locator('[data-mobile-view=sampler]').tap();
   await overflow();
   await page.locator('[data-action=sample-edit]').tap();await page.locator('[data-sample="0"]').tap();

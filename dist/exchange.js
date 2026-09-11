@@ -1,0 +1,52 @@
+import {clamp,escapeHTML as esc,normalizeTrack} from './core.js';
+import {MAX_EXCHANGE_BYTES,createMatcher,normalizePath,parseCSV,parseM3U,parsePLS,parseCrate,writeCSV,writeM3U,writePLS,writeCrate,writeMatchReport} from './exchange-core.js';
+import {parseRekordbox,parseNML,writeRekordbox,writeNML} from './exchange-xml.js';
+export const FORMATS={xml:{name:'rekordbox XML',mime:'application/xml',note:'曲情報・BPM・最初のグリッド・8ホットキュー・ループ・メモリーキュー・プレイリスト。'},nml:{name:'Traktor NML',mime:'application/xml',note:'曲情報・BPM・最初のグリッド・8ホットキュー・ループ・メモリーキュー・プレイリスト。キューの色は含みません。'},m3u8:{name:'M3U / M3U8',mime:'audio/x-mpegurl',note:'曲順・音源パス・曲名・長さ。書き出しはUTF-8のM3U8です。キュー・グリッドは含みません。'},pls:{name:'PLS',mime:'audio/x-scpls',note:'曲順・音源パス・曲名・長さ。キュー・グリッドは含みません。'},csv:{name:'CSV',mime:'text/csv',note:'曲情報・音源パス・BPM・キー・8キュー・ループ情報。CSVのpath / location / filename列から照合します。'},crate:{name:'Serato .crate',mime:'application/octet-stream',note:'曲順・音源パスのみ。Seratoのキュー・解析データ・database V2は含みません。'}};
+export function parseExchange(data,name){
+ const bytes=typeof data==='string'?new TextEncoder().encode(data):new Uint8Array(data);if(bytes.length>MAX_EXCHANGE_BYTES)throw new Error('交換ファイルは25 MB以下にしてください。');const ext=name.split('.').pop().toLowerCase(),base=name.replace(/\.[^.]+$/,'');if(ext==='crate')return {...parseCrate(bytes,base),format:'crate'};
+ let text;try{text=new TextDecoder('utf-8',{fatal:true}).decode(bytes);}catch{throw new Error('UTF-8のファイルを選んでください。M3Uは元ソフトからUTF-8 / M3U8で保存してください。');}
+ const parser={xml:parseRekordbox,nml:parseNML,m3u:parseM3U,m3u8:parseM3U,pls:parsePLS,csv:parseCSV}[ext];if(!parser)throw new Error('XML / NML / M3U8 / M3U / PLS / CSV / crateを選んでください。');return {...parser(text,base),format:ext==='m3u'?'m3u8':ext};
+}
+export function planExchange(parsed,tracks){
+ const match=createMatcher(tracks),rows=parsed.tracks.map(source=>({source,...match(source.path)})),groups=new Map();
+ for(const row of rows)if(row.status==='matched'){const list=groups.get(row.track.id)||[];list.push(row);groups.set(row.track.id,list);}
+ for(const group of groups.values())if(new Set(group.map(r=>normalizePath(r.source.path))).size>1)for(const row of group)row.status='ambiguous';
+ const counts={matched:0,missing:0,ambiguous:0,unsupported:0};for(const row of rows)counts[row.status]++;return {parsed,rows,counts};
+}
+function mergedTrack(original,source,metadata){
+ const t=structuredClone(original);t.originalLocation=normalizePath(source.path);
+ if(metadata){for(const key of ['name','artist','album','genre','key','comment'])if(typeof source[key]==='string'&&(key!=='name'||source[key].trim()))t[key]=source[key].slice(0,key==='comment'?2000:500);
+  if(Number.isFinite(source.bpm)&&source.bpm>=20&&source.bpm<=400){t.bpm=source.bpm;t.bpmConfidence=100;}if(Number.isFinite(source.gridOffset))t.gridOffset=clamp(source.gridOffset,0,t.duration);if(Number.isFinite(source.rating))t.rating=Math.round(clamp(source.rating,0,5));
+  t.cues||=Array(8).fill(null);t.cueDetails||=Array(8).fill(null);
+  for(let i=0;i<8;i++)if(Number.isFinite(source.cues?.[i])&&source.cues[i]>=0&&source.cues[i]<=t.duration){t.cues[i]=source.cues[i];t.cueDetails[i]=source.cueDetails?.[i]||null;}
+  if(Array.isArray(source.memoryCues)){const cues=[...(t.memoryCues||[]),...source.memoryCues].filter(m=>m&&typeof m==='object'&&Number.isFinite(m.start));t.memoryCues=cues.filter((m,i)=>cues.findIndex(x=>x.start===m.start&&x.end===m.end&&x.type===m.type)===i).slice(0,128);}
+ }
+ return normalizeTrack(t);
+}
+export async function applyExchange(a,plan,metadata=true){
+ // Re-evaluate against current tracks: the preview may have been open during other edits.
+ const current=planExchange(plan.parsed,[...a.tracks.values()]),updates=new Map(),ids=new Map();for(const row of current.rows)if(row.status==='matched'){const t=mergedTrack(updates.get(row.track.id)||row.track,row.source,metadata&&plan.parsed.metadata);updates.set(t.id,t);ids.set(row.source.id,t.id);}
+ const playlists=plan.parsed.playlists.map(p=>({id:crypto.randomUUID(),name:String(p.name).slice(0,200),tracks:p.tracks.map(id=>ids.get(id)).filter(Boolean)})).filter(p=>p.tracks.length);
+ if(a.s.playlists.length+playlists.length>300)throw new Error('クレートの上限300件を超えます。不要なクレートを整理してください。');
+ await a.persistExchange([...updates.values()],playlists);return {...current.counts,playlists:playlists.length};
+}
+export function showExchange(a){a.modal('他ソフトとのファイル交換',`<p>音源を先に取り込み、その後でプレイリストや曲情報を読み込めます。音声データは交換ファイルには含まれません。</p><div class="dialog-actions"><button class="button primary" data-action="exchange-import">ファイルを読み込む</button><button class="button" data-action="exchange-export-dialog">書き出す</button><button class="button" data-action="import-folder">音源フォルダーを追加</button></div><div class="exchange-formats">${Object.values(FORMATS).map(f=>`<p><strong>${f.name}</strong><br>${f.note}</p>`).join('')}</div><p>ローカルファイルのみ照合します。独自ライブラリDBやUSBデバイスを直接変更する機能ではありません。</p>`);}
+export async function previewExchange(a,file){if(file.size>MAX_EXCHANGE_BYTES)throw new Error('交換ファイルは25 MB以下にしてください。');const parsed=parseExchange(await file.arrayBuffer(),file.name),plan=planExchange(parsed,[...a.tracks.values()]);a.exchangePlan=plan;const c=plan.counts;
+ a.modal('読み込み内容を確認',`<p><strong>${esc(file.name)}</strong> · ${esc(FORMATS[parsed.format].name)}</p><p>${c.matched}曲一致 / ${c.missing}曲未登録 / ${c.ambiguous}曲重複 / ${c.unsupported}曲未対応パス</p>${parsed.metadata?'<label><input type="checkbox" id="exchange-metadata" checked>記載された曲情報とキューを上書きする</label><p>未記載のキューは保持します。チェックを外すと曲順とパスだけ読み込みます。</p>':''}<p>一致した曲で新しいクレートを作成します。同名のクレートは削除しません。</p>${parsed.warnings.length?`<p class="note">${parsed.warnings.length}件の形式上の制限があります。${esc(parsed.warnings[0])}</p>`:''}<details><summary>未一致の曲とパスを確認</summary><ul>${plan.rows.filter(r=>r.status!=='matched').slice(0,50).map(r=>`<li>${esc(r.source.path)} · ${esc({missing:'音源未登録',ambiguous:'同名で判別不可',unsupported:'未対応パス'}[r.status])}</li>`).join('')||'<li>すべて一致しています。</li>'}</ul></details><div class="dialog-actions"><button data-action="exchange-apply" class="button primary" ${!c.matched?'disabled':''}>一致した曲を読み込む</button><button data-action="close-dialog" class="button">キャンセル</button><button data-action="exchange-report" class="button">照合結果CSV</button></div><p>重複するファイル名は、音源フォルダーの追加で相対パスを保持すると照合しやすくなります。未登録の音源を追加したら、このファイルをもう一度読み込んでください。</p>`);
+}
+export function showExportExchange(a){const value=FORMATS.xml;a.modal('他ソフト向けに書き出す',`<label><span>形式</span><select id="exchange-format">${Object.entries(FORMATS).map(([key,f])=>`<option value="${key}">${esc(f.name)}</option>`).join('')}</select></label><p id="exchange-format-note" class="note">${value.note}</p><label><span>対象</span><select id="exchange-scope"><option value="all">全コレクション</option><option value="favorites">お気に入り</option>${a.s.playlists.map(p=>`<option value="${esc(p.id)}" ${a.s.playlist===p.id?'selected':''}>${esc(p.name)}</option>`).join('')}</select></label><label><span>元音源のフォルダー</span><input id="exchange-base" placeholder="C:/Music または /Users/me/Music"></label><label><input type="checkbox" id="exchange-preserve" checked>読み込み済みの元パスを優先する</label><label><span>Serato crate基準フォルダー</span><input id="exchange-crate-base" placeholder="C:/Users/me/Music（_Serato_の親）"></label><label><span>NMLのMacボリューム名</span><input id="exchange-volume" value="Macintosh HD"></label><p>XML/NMLは実際の絶対パスが必要です。その他の形式は空欄なら相対パスを使います。Serato crateは対象音源と同じドライブのSubcratesへコピーする用途です。</p><div class="dialog-actions"><button data-action="exchange-export" class="button primary">ファイルを書き出す</button><button data-action="close-dialog" class="button">キャンセル</button></div>`);}
+export function buildExport(a,format,scope,options={}){
+ const all=[...a.tracks.values()];let tracks,playlists;
+ if(scope==='all'){tracks=all;playlists=a.s.playlists.length?a.s.playlists:[{name:'SeekDeck',tracks:all.map(t=>t.id)}];}
+ else if(scope==='favorites'){tracks=all.filter(t=>t.rating>0);playlists=[{name:'Favorites',tracks:tracks.map(t=>t.id)}];}
+ else{const p=a.s.playlists.find(p=>p.id===scope);if(!p)throw new Error('クレートが見つかりません。');tracks=p.tracks.map(id=>a.tracks.get(id)).filter(Boolean);playlists=[p];}
+ if(!tracks.length)throw new Error('書き出す曲がありません。');
+ const unique=[...new Map(tracks.map(t=>[t.id,t])).values()],writers={xml:()=>writeRekordbox(unique,playlists,options),nml:()=>writeNML(unique,playlists,options),csv:()=>writeCSV(tracks,options),m3u8:()=>writeM3U(tracks,options),pls:()=>writePLS(tracks,options),crate:()=>writeCrate(tracks,options)};
+ if(!writers[format])throw new Error('書き出し形式が不正です。');return {body:writers[format](),mime:FORMATS[format].mime,name:`SeekDeck-${format==='xml'?'rekordbox':format==='nml'?'traktor':(playlists.length===1?playlists[0].name:'collection').replace(/[^\p{L}\p{N}_.-]/gu,'_').slice(0,80)}.${format}`};
+}
+export async function handleExchangeAction(a,action,el){const $=id=>document.getElementById(id);switch(action){
+ case'exchange':showExchange(a);break;case'import-folder':$('audio-folder').click();break;case'exchange-import':$('exchange-file').click();break;case'exchange-export-dialog':showExportExchange(a);break;
+ case'exchange-apply':{if(!a.exchangePlan)throw new Error('ファイルを選び直してください。');el.disabled=true;try{const r=await applyExchange(a,a.exchangePlan,$('exchange-metadata')?.checked??false);a.exchangePlan=null;a.render();a.applyAll();a.modal('読み込み完了',`<p>${r.matched}曲を読み込み、${r.playlists}個のクレートを追加しました。</p><p>未登録 ${r.missing}曲 / 重複 ${r.ambiguous}曲 / 未対応 ${r.unsupported}曲</p><button class="button primary" data-action="close-dialog">閉じる</button>`);}finally{el.disabled=false;}break;}
+ case'exchange-export':{const out=buildExport(a,$('exchange-format').value,$('exchange-scope').value,{base:$('exchange-base').value,preserve:$('exchange-preserve').checked,volume:$('exchange-volume').value,crateBase:$('exchange-crate-base').value});a.downloadBlob(new Blob([out.body],{type:out.mime}),out.name);a.toast('交換ファイルを書き出しました。');break;}
+ case'exchange-report':{if(!a.exchangePlan)break;a.downloadBlob(new Blob([writeMatchReport(a.exchangePlan.rows)],{type:'text/csv'}),'SeekDeck-match-report.csv');break;}
+ default:return false;}return true;}
