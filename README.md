@@ -6,11 +6,13 @@
 
 `dist/` を静的ホストから配信します。ファイルを `file://` で開く形式には対応しません。初回起動後はService Workerでアプリと4つのオリジナルデモをキャッシュします。音源を扱うリクエストは同じオリジンのデモ音源のみです。ユーザー音源はIndexedDBへ保存します。
 
-## v0.1.0 — 初回リリース
+## リリースとGitHub Pages
 
-4デッキのローカルDJ環境を試せる初期版です。商用DJソフトとの完全互換、全コントローラー対応、実測した低遅延を保証する段階ではありません。
+[最新版と配布ZIP](https://github.com/Xenoah/seekdeck-webdj/releases/latest) · [変更履歴](releases/)
 
-[リリースと配布ZIP](https://github.com/Xenoah/seekdeck-webdj/releases/tag/v0.1.0) · [リリースノート](releases/v0.1.0.md)
+Pagesの初回設定は [Settings → Pages](https://github.com/Xenoah/seekdeck-webdj/settings/pages) で **Source: GitHub Actions** を選び、[GitHub Pages](https://github.com/Xenoah/seekdeck-webdj/actions/workflows/pages.yml) の **Run workflow** を実行します。以降のアプリ更新はテスト後に自動配信します。未設定時は配信ファイルの作成までを行います。
+
+初回有効化には管理権限が必要です（[GitHub公式の権限要件](https://github.com/actions/configure-pages/blob/main/action.yml)）。オリジンごとに音源と設定の保存領域は分かれます。
 
 ## 起動方法
 

@@ -1,25 +1,19 @@
-name: First release
-
+name: Release
 on:
   push:
     branches: [main]
-    paths:
-      - .github/workflows/release.yml
-      - releases/v0.1.0.md
+    paths: [package.json, 'releases/**', tools/publish-release.mjs, .github/workflows/release.yml]
   workflow_dispatch:
-
 permissions:
   contents: read
-
 concurrency:
-  group: seekdeck-first-release
+  group: seekdeck-release
   cancel-in-progress: false
-
 jobs:
   release:
     if: github.repository == 'Xenoah/seekdeck-webdj' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 15
     permissions:
       contents: write
     steps:
@@ -30,37 +24,10 @@ jobs:
         with:
           node-version: '24'
           package-manager-cache: false
-      - name: Verify release version
-        run: node -e "if(require('./package.json').version!=='0.1.0')process.exit(1)"
-      - name: Run existing regression tests
-        run: npm test
-      - name: Validate application files and offline assets
-        run: npm run check
-      - name: Package application and verify ZIP contents
-        run: python3 tools/package-release.py
-      - name: Publish v0.1.0
+      - run: npm test
+      - run: npm run check
+      - run: python3 tools/package-release.py
+      - name: Publish version from package.json
         env:
           GH_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          tag=v0.1.0
-          archive=release-artifacts/seekdeck-webdj-v0.1.0.zip
-          checksums=release-artifacts/SHA256SUMS.txt
-          state="$(gh release list --repo "$GITHUB_REPOSITORY" --limit 100 --json tagName,isDraft --jq '.[] | select(.tagName == "v0.1.0") | if .isDraft then "draft" else "published" end')"
-          if [[ "$state" == "published" ]]; then
-            echo 'v0.1.0 is already published; keeping the existing release.'
-            exit 0
-          fi
-          if [[ "$state" == "draft" ]]; then
-            target="$(gh release view "$tag" --repo "$GITHUB_REPOSITORY" --json targetCommitish --jq .targetCommitish)"
-            if [[ "$target" != "$GITHUB_SHA" ]]; then
-              echo 'The existing draft points to a different commit.' >&2
-              exit 1
-            fi
-            gh release upload "$tag" "$archive" "$checksums" --repo "$GITHUB_REPOSITORY" --clobber
-          else
-            gh release create "$tag" "$archive" "$checksums" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --draft --title 'SeekDeck v0.1.0' --notes-file releases/v0.1.0.md
-          fi
-          gh release edit "$tag" --repo "$GITHUB_REPOSITORY" --draft=false --latest
-          gh release view "$tag" --repo "$GITHUB_REPOSITORY" --json url,isDraft,tagName
+        run: node tools/publish-release.mjs
