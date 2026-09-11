@@ -1,0 +1,157 @@
+/* A fixed performance surface for landscape phones. Advanced controls scroll
+   inside each deck; transport and the crossfader stay within reach. */
+body[data-ui=mobile][data-orientation=landscape]{
+  --touch-mixer:clamp(140px,21vw,190px);
+  height:100dvh;overflow:hidden;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  display:grid;grid-template-columns:152px minmax(184px,1fr) auto;grid-template-rows:48px minmax(0,1fr);
+  background:radial-gradient(ellipse at top,#1a2735,#090e15 75%);
+}
+body[data-ui=mobile][data-orientation=landscape] .app-header{grid-area:1/1/2/2;height:48px;padding:2px 4px 2px 8px;gap:3px;background:transparent;border:0}
+body[data-ui=mobile][data-orientation=landscape] .brand{font-size:15px;letter-spacing:.3px;gap:4px}
+body[data-ui=mobile][data-orientation=landscape] .brand svg{width:22px}
+body[data-ui=mobile][data-orientation=landscape] .app-header .icon-button{width:44px;flex:none}
+body[data-ui=mobile][data-orientation=landscape] #audio-start,
+body[data-ui=mobile][data-orientation=landscape] .workspace-toolbar,
+body[data-ui=mobile][data-orientation=landscape] .status-bar,
+body[data-ui=mobile][data-orientation=landscape] .rotate-hint{display:none}
+body[data-ui=mobile][data-orientation=landscape] .mobile-decks{grid-area:1/2/2/3;padding:2px 6px;gap:4px;justify-content:center;min-width:0}
+body[data-ui=mobile][data-orientation=landscape] .mobile-decks>button{flex:0 1 58px;min-width:40px;height:44px;padding:5px 8px;background:transparent;border-color:transparent;border-top-width:2px}
+body[data-ui=mobile][data-orientation=landscape] .mobile-decks strong{font-size:14px}
+body[data-ui=mobile][data-orientation=landscape] .mobile-decks small{display:none}
+body[data-ui=mobile][data-orientation=landscape] .mobile-decks [data-bank-active=true]{border-top-color:var(--accent);background:#203141}
+body[data-ui=mobile][data-orientation=landscape] .mobile-decks button[aria-pressed=true]{box-shadow:none;background:#2b4052!important}
+body[data-ui=mobile][data-orientation=landscape] .mobile-nav{grid-area:1/3/2/4;position:static;gap:2px;padding:2px 6px 2px 0;border:0;background:none;backdrop-filter:none}
+body[data-ui=mobile][data-orientation=landscape] .mobile-nav>button{min-height:44px!important;min-width:44px;height:44px;padding:2px 6px;gap:0;font-size:10px;line-height:1.3;flex:none}
+body[data-ui=mobile][data-orientation=landscape] .mobile-nav>button>span{font-size:19px}
+body[data-ui=mobile][data-orientation=landscape] .workspace{
+  grid-area:2/1/3/4;display:grid;grid-template-columns:minmax(0,1fr) var(--touch-mixer) minmax(0,1fr);grid-template-rows:minmax(0,1fr);
+  height:auto!important;min-height:0;margin:0 6px 6px;gap:5px;
+}
+body[data-ui=mobile][data-orientation=landscape] .workspace>.panel{height:100%!important;min-height:0!important;min-width:0;order:0!important;border-radius:9px;background:linear-gradient(165deg,#18222e,#111923);box-shadow:0 3px 16px #0004}
+body[data-ui=mobile][data-orientation=landscape] .panel[data-side=left]{grid-area:1/1/2/2;border-top:2px solid var(--accent)}
+body[data-ui=mobile][data-orientation=landscape] .panel[data-side=right]{grid-area:1/3/2/4;border-top:2px solid var(--accent)}
+body[data-ui=mobile][data-orientation=landscape] .panel[data-panel=mixer]{grid-area:1/2/2/3;background:#0e1721}
+body[data-ui=mobile][data-orientation=landscape] .panel[data-panel=library],
+body[data-ui=mobile][data-orientation=landscape] .panel[data-panel=sampler]{grid-area:1/1/2/4}
+body[data-ui=mobile][data-orientation=landscape] .panel[data-panel^=deck]>.panel-header,
+body[data-ui=mobile][data-orientation=landscape] .panel[data-panel=mixer]>.panel-header{display:none}
+body[data-ui=mobile][data-orientation=landscape] .panel[data-panel^=deck]>.panel-body,
+body[data-ui=mobile][data-orientation=landscape] .panel[data-panel=mixer]>.panel-body{overflow:hidden}
+body[data-ui=mobile][data-orientation=landscape] .panel[data-panel^=deck] .deck-inner{
+  display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:44px 24px minmax(0,1fr) 44px 44px;
+  height:100%;max-width:none;padding:4px 7px 6px;gap:4px;
+}
+body[data-ui=mobile][data-orientation=landscape] .deck-track{gap:5px;min-width:0}
+body[data-ui=mobile][data-orientation=landscape] .deck-identity{gap:7px;overflow:hidden}
+body[data-ui=mobile][data-orientation=landscape] .deck-letter{width:25px;height:28px;font-size:16px;border:0;background:transparent}
+body[data-ui=mobile][data-orientation=landscape] .deck-track h3{font-size:13px;line-height:1.3;margin:0 0 3px}
+body[data-ui=mobile][data-orientation=landscape] .deck-track p{font-size:10px;letter-spacing:.2px;line-height:1.3}
+body[data-ui=mobile][data-orientation=landscape] .deck-track [data-bpm]{font-size:13px;color:var(--accent)}
+.touch-key{margin-left:5px;color:#c2d4e2}
+body[data-ui=mobile][data-orientation=landscape] .deck-load{width:44px;min-width:44px;height:44px;color:var(--accent);background:#213242;border-color:#344958}
+body[data-ui=mobile][data-orientation=landscape] .overview{height:24px;min-height:24px;border-radius:3px}
+.touch-surface{min-height:0;min-width:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#3b5266 transparent}
+.touch-vinyl{display:grid;grid-template-columns:minmax(0,1fr) 64px;align-items:center;justify-items:center;gap:5px;height:100%;min-height:64px}
+body[data-ui=mobile][data-orientation=landscape] .jog{width:auto;height:auto;min-width:0;max-width:200px;max-height:200px;aspect-ratio:1;align-self:center;justify-self:center;margin:auto; /* size set from the available stage */
+  width:min(100%,var(--jog-size,140px));height:auto;
+  background:repeating-radial-gradient(circle at center,#131e2a 0 2px,#1c2a38 3px 4px);border-color:#496176;box-shadow:inset 0 0 0 5px #0c131b,inset 0 0 0 6px #394b5d,0 6px 18px #0006;
+}
+body[data-ui=mobile][data-orientation=landscape] .jog-center{inset:24%;gap:4px;border-radius:50%;background:#111c28;border:1px solid #314656;box-shadow:0 0 0 4px #0e1721}
+body[data-ui=mobile][data-orientation=landscape] .jog-mode{font-size:8px;letter-spacing:1px}
+body[data-ui=mobile][data-orientation=landscape] .jog-time{font-size:clamp(13px,2.4vw,21px);letter-spacing:-.7px}
+body[data-ui=mobile][data-orientation=landscape] .jog-remaining{font-size:9px}
+body[data-ui=mobile][data-orientation=landscape] .touch-loop .loop-row{display:flex;flex-wrap:wrap;gap:4px;padding:0}
+body[data-ui=mobile][data-orientation=landscape] .touch-loop .loop-row>*{display:none}
+body[data-ui=mobile][data-orientation=landscape] .touch-loop .loop-toggle{display:block;min-width:64px;width:64px;min-height:44px;font-size:10px;padding:4px}
+.touch-loop:before{content:'AUTO LOOP';display:block;font-size:8px;color:#8298ad;letter-spacing:.7px;margin-bottom:6px;text-align:center}
+.touch-deck-tabs,.touch-transport{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;min-width:0}
+.touch-deck-tabs button{font-size:10px;letter-spacing:.3px;background:transparent;color:#849aaf;border-color:transparent;padding:3px 1px;border-radius:5px}
+.touch-deck-tabs button[aria-pressed=true]{background:#253b4c;border-color:#3c596d;color:var(--accent)}
+.touch-transport button{min-width:0;min-height:44px;font-size:12px;font-weight:650;letter-spacing:.6px;border-radius:6px}
+.touch-transport .cue-button{color:#e8d7aa;background:#342e23;border-color:#635438}
+.touch-transport .play-button{color:var(--accent);background:#253c4b;border-color:#557486}
+.touch-transport .play-button.active{color:#0c1c21;background:var(--accent);border-color:var(--accent)}
+.touch-transport .sync-button{font-size:10px;color:#b0cbdc;background:#1b2d3a}
+body[data-ui=mobile][data-orientation=landscape] .pad-tabs{gap:3px;flex-wrap:wrap;margin-bottom:5px}
+body[data-ui=mobile][data-orientation=landscape] .pad-tabs>span{display:none}
+body[data-ui=mobile][data-orientation=landscape] .pad-tabs>button{font-size:9px;min-width:44px;flex:1;letter-spacing:0}
+body[data-ui=mobile][data-orientation=landscape] .cue-pads{gap:5px;grid-template-columns:repeat(4,minmax(0,1fr))}
+body[data-ui=mobile][data-orientation=landscape] .cue-pad{height:44px;font-size:11px}
+body[data-ui=mobile][data-orientation=landscape] .cue-pad span{font-size:9px}
+body[data-ui=mobile][data-orientation=landscape] [data-surface=tools] .touch-surface{display:flex;flex-direction:column;gap:8px;padding-right:3px}
+body[data-ui=mobile][data-orientation=landscape] [data-surface=tools] .touch-surface>*{flex-shrink:0}
+body[data-ui=mobile][data-orientation=landscape] .deck-data{align-items:center;gap:3px;flex-wrap:wrap}
+body[data-ui=mobile][data-orientation=landscape] .deck-data .bpm-display{display:none}
+body[data-ui=mobile][data-orientation=landscape] .deck-options{display:grid;grid-template-columns:1fr 1fr}
+body[data-ui=mobile][data-orientation=landscape] .deck-fx{padding-bottom:8px}
+body[data-ui=mobile][data-orientation=landscape] .deck-fx input[type=number]{width:60px}
+body[data-ui=mobile][data-orientation=landscape] .mixer-inner{height:100%;min-height:0;padding:7px 8px 4px!important;gap:5px}
+body[data-ui=mobile][data-orientation=landscape] .mixer-channels{gap:9px;flex:1;min-height:0}
+body[data-ui=mobile][data-orientation=landscape] .channel-strip{gap:5px;min-height:0}
+body[data-ui=mobile][data-orientation=landscape] .channel-name{height:18px;margin:0;justify-content:center}
+body[data-ui=mobile][data-orientation=landscape] .channel-name>span{font-size:12px;letter-spacing:1px}
+body[data-ui=mobile][data-orientation=landscape] .channel-name select,
+body[data-ui=mobile][data-orientation=landscape] .eq-controls,
+body[data-ui=mobile][data-orientation=landscape] .master-output,
+body[data-ui=mobile][data-orientation=landscape] .fader-scale,
+body[data-ui=mobile][data-orientation=landscape] .crossfader-ticks{display:none}
+body[data-ui=mobile][data-orientation=landscape] .knob-face{width:44px;height:44px}
+body[data-ui=mobile][data-orientation=landscape] .knob-caption{font-size:9px}
+body[data-ui=mobile][data-orientation=landscape] .knob input[type=range]{min-width:44px;min-height:44px;touch-action:none}
+body[data-ui=mobile][data-orientation=landscape] .headphone-button{min-height:44px;padding:3px;gap:4px;font-size:9px}
+body[data-ui=mobile][data-orientation=landscape] .headphone-button svg{width:15px}
+body[data-ui=mobile][data-orientation=landscape] .fader-area{min-height:44px;max-height:none;height:auto;gap:6px;flex:1}
+body[data-ui=mobile][data-orientation=landscape] .fader-area .channel-fader{height:100%;width:44px;min-height:44px;min-width:44px;margin:0;touch-action:none}
+body[data-ui=mobile][data-orientation=landscape] .level-meter{height:100%;min-height:44px;width:5px}
+body[data-ui=mobile][data-orientation=landscape] .crossfader-block{flex:none;padding-top:6px}
+body[data-ui=mobile][data-orientation=landscape] .crossfader-block>div:first-child{font-size:10px}
+body[data-ui=mobile][data-orientation=landscape] .crossfader-block label{font-size:8px;letter-spacing:.6px}
+body[data-ui=mobile][data-orientation=landscape] #crossfader{min-height:44px;touch-action:none}
+body[data-ui=mobile][data-orientation=landscape][data-mobile-view=mixer]{--touch-mixer:clamp(208px,28vw,250px)}
+body[data-ui=mobile][data-orientation=landscape][data-mobile-view=mixer] .mixer-channels{overflow:auto;overscroll-behavior:contain}
+body[data-ui=mobile][data-orientation=landscape][data-mobile-view=mixer] .channel-strip{min-height:min-content}
+body[data-ui=mobile][data-orientation=landscape][data-mobile-view=mixer] .eq-controls{display:grid;grid-template-columns:1fr 1fr;gap:8px 3px}
+body[data-ui=mobile][data-orientation=landscape][data-mobile-view=mixer] .channel-name{height:44px;gap:4px}
+body[data-ui=mobile][data-orientation=landscape][data-mobile-view=mixer] .channel-name select{display:block;min-width:44px;min-height:44px;font-size:11px}
+body[data-ui=mobile][data-orientation=landscape][data-mobile-view=mixer] .filter-control,
+body[data-ui=mobile][data-orientation=landscape][data-mobile-view=mixer] .fader-area{display:none}
+body[data-ui=mobile][data-orientation=landscape] .panel[data-panel=library]>.panel-header{display:none}
+body[data-ui=mobile][data-orientation=landscape] .library-inner{height:100%;min-height:0;display:flex;flex-direction:row}
+body[data-ui=mobile][data-orientation=landscape] .crates{display:flex;flex-direction:column;overflow:auto;width:148px;border-right:1px solid var(--line);border-bottom:0;padding:6px;gap:3px}
+body[data-ui=mobile][data-orientation=landscape] .crates>button{width:100%;font-size:11px}
+body[data-ui=mobile][data-orientation=landscape] .library-search{padding:5px 7px;flex-wrap:nowrap}
+body[data-ui=mobile][data-orientation=landscape] .library-search>label{flex-basis:auto}
+body[data-ui=mobile][data-orientation=landscape] .track-table-scroll{overflow:auto;overscroll-behavior:contain}
+body[data-ui=mobile][data-orientation=landscape] .track-table tr{grid-template-columns:minmax(100px,1fr) 50px 44px 44px 96px 44px;padding:7px;gap:5px;align-items:center}
+body[data-ui=mobile][data-orientation=landscape] .track-table .track-title{grid-column:1;grid-row:auto}
+body[data-ui=mobile][data-orientation=landscape] .track-table .track-title strong{font-size:12px}
+body[data-ui=mobile][data-orientation=landscape] .track-table .track-title small{font-size:10px}
+body[data-ui=mobile][data-orientation=landscape] .track-table td{font-size:11px}
+body[data-ui=mobile][data-orientation=landscape] .track-table td:last-child{grid-column:6;grid-row:auto}
+body[data-ui=mobile][data-orientation=landscape] .track-table .load-col{grid-column:5}
+body[data-ui=mobile][data-orientation=landscape] .load-col .mobile-load{font-size:11px}
+body[data-ui=mobile][data-orientation=landscape] .panel[data-panel=sampler]>.panel-header{display:none}
+body[data-ui=mobile][data-orientation=landscape] .sampler-inner{padding:8px;display:grid;grid-template-columns:1fr auto;grid-template-rows:minmax(0,1fr) 44px;gap:7px}
+body[data-ui=mobile][data-orientation=landscape] .sampler-pads{grid-column:1/-1;grid-template-columns:repeat(4,minmax(0,1fr))!important;grid-template-rows:repeat(2,minmax(44px,1fr))!important}
+body[data-ui=mobile][data-orientation=landscape] .sampler-hint{display:none}
+body[data-ui=mobile][data-orientation=landscape] .sample-edit{padding:5px 12px}
+body[data-ui=mobile][data-orientation=landscape] .toasts{bottom:calc(9px + env(safe-area-inset-bottom));right:12px;max-width:300px}
+body[data-ui=mobile][data-orientation=landscape] .toast{font-size:11px;padding:8px 12px}
+.rotate-hint{display:none;margin:0 12px 8px;color:#91a9bc;font-size:12px;line-height:1.5}
+body[data-ui=mobile][data-orientation=portrait] .rotate-hint{display:block}
+@media(max-width:700px){
+  body[data-ui=mobile][data-orientation=landscape]{grid-template-columns:148px minmax(176px,1fr) auto}
+  body[data-ui=mobile][data-orientation=landscape] .mobile-decks{padding:2px;gap:3px}
+  body[data-ui=mobile][data-orientation=landscape] .mobile-decks>button{padding:5px;min-width:40px}
+  body[data-ui=mobile][data-orientation=landscape] .touch-vinyl{grid-template-columns:minmax(0,1fr) 58px;gap:3px}
+  body[data-ui=mobile][data-orientation=landscape] .touch-loop .loop-toggle{min-width:58px;width:58px;font-size:9px}
+  body[data-ui=mobile][data-orientation=landscape] .crates{width:115px}
+  body[data-ui=mobile][data-orientation=landscape] .track-table tr{grid-template-columns:minmax(80px,1fr) 42px 80px 44px}
+  body[data-ui=mobile][data-orientation=landscape] .track-table td:nth-child(4),body[data-ui=mobile][data-orientation=landscape] .track-table td:nth-child(5){display:none}
+  body[data-ui=mobile][data-orientation=landscape] .track-table .load-col{grid-column:3}
+  body[data-ui=mobile][data-orientation=landscape] .track-table td:last-child{grid-column:4}
+}
+@media(max-height:350px){
+  body[data-ui=mobile][data-orientation=landscape] .filter-control{display:none}
+  body[data-ui=mobile][data-orientation=landscape] .jog-mode{display:none}
+}

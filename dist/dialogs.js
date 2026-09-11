@@ -4,6 +4,8 @@ const $=q=>document.querySelector(q);
 let devices=[],tap=[];
 const options=(list,value)=>list.map(([v,t])=>`<option value="${esc(v)}" ${v===value?'selected':''}>${esc(t)}</option>`).join('');
 export function showSettings(a){const s=a.s,m=s.mixer,lat=a.engine.latency;const outputs=[['default','システム既定'],...devices.filter(d=>d.kind==='audiooutput'&&d.deviceId!=='default').map((d,i)=>[d.deviceId,d.label||`出力 ${i+1}`])];a.modal('オーディオ・保存設定',`
+ <div class="dialog-actions"><button data-action="record" class="button ${a.engine.recording?'is-recording':''}"><span class="record-dot"></span>${a.engine.recording?'録音を停止して保存':'録音を開始'}</button><button data-action="midi" class="button">コントローラー</button><button data-action="help" class="button">使い方</button></div>
+ <label><span>マスター音量</span><input type="range" min="0" max="1" step=".001" value="${m.master}" data-mixer="master" aria-label="マスター音量"></label><label><span>波形の配色</span><select data-waveform-style aria-label="波形の配色">${options([['rgb','RGB'],['3band','3 BAND'],['deck','DECK']],s.waveformStyle)}</select></label>
  <h3>音声出力</h3><label><span>出力モード</span><select id="output-route">${options([['stereo','MASTER ステレオ'],['split','スプリット：左 MASTER / 右 CUE'],['multi','4ch：1–2 MASTER / 3–4 CUE'],['device','MASTER / CUEを別の機器へ']],m.route)}</select></label>
  <label><span>MASTER出力</span><select id="master-device">${options(outputs,m.masterSink)}</select></label><label><span>CUE出力</span><select id="cue-device">${options(outputs,m.cueSink)}</select></label>
  <div class="dialog-actions"><button data-action="apply-output" class="button primary">出力を適用</button><button data-action="list-devices" class="button">出力一覧を更新</button><button data-action="request-devices" class="button">デバイス名を取得（入力許可）</button></div>
