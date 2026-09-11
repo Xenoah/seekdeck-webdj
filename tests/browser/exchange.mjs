@@ -16,15 +16,15 @@ export async function runExchange(page,url){
  await page.locator('[data-action=library-menu]').click();await page.locator('[data-action=exchange]').click();await page.locator('#exchange-file').setInputFiles('tests/fixtures/exchange.xml');
  await page.waitForSelector('[data-action=exchange-apply]');
  assert.equal(await page.evaluate(async()=>{const {api}=await import('/seekdeck-webdj/app.js');return api.tracks.get('demo-1').name;}),'Neon Current');
- await page.locator('[data-action=close-dialog]').click();
- await page.locator('#exchange-file').setInputFiles('tests/fixtures/exchange.xml');await page.locator('[data-action=exchange-apply]').click();await page.getByRole('heading',{name:'読み込み完了'}).waitFor();await page.locator('[data-action=close-dialog]').click();
+ await page.getByRole('button',{name:'キャンセル',exact:true}).click();
+ await page.locator('#exchange-file').setInputFiles('tests/fixtures/exchange.xml');await page.locator('[data-action=exchange-apply]').click();await page.getByRole('heading',{name:'読み込み完了'}).waitFor();await page.locator('.dialog-head [data-action=close-dialog]').click();
  assert.equal(await page.evaluate(async()=>{const {api}=await import('/seekdeck-webdj/app.js');return api.tracks.get('demo-1').name;}),'夜 & 光');
  await page.locator('[data-panel=deck1] [data-pad="0"]').click();
  await page.waitForFunction(async()=>{const {api}=await import('/seekdeck-webdj/app.js');const d=api.s.decks[1];return d.playing&&d.loop.enabled&&d.loop.start===1.25&&d.loop.end===3.25;});
  await page.locator('[data-panel=deck1] [data-action=play]').click();
  await page.locator('[data-action=library-menu]').click();await page.locator('[data-action=exchange]').click();await page.locator('[data-action=exchange-export-dialog]').click();await page.locator('#exchange-format').selectOption('nml');await page.locator('#exchange-base').fill('C:/Music');
  const [download]=await Promise.all([page.waitForEvent('download'),page.locator('[data-action=exchange-export]').click()]);const path=await download.path(),text=fs.readFileSync(path,'utf8');assert.match(text,/TYPE="5" START="1250" LEN="2000"/);assert.match(text,/NML VERSION="19"/);
- await page.locator('[data-action=close-dialog]').click();await page.waitForTimeout(950);await page.reload();await page.waitForSelector('[data-panel=library]');
+ await page.locator('.dialog-head [data-action=close-dialog]').click();await page.waitForTimeout(950);await page.reload();await page.waitForSelector('[data-panel=library]');
  const restored=await page.evaluate(async()=>{const {api}=await import('/seekdeck-webdj/app.js');return {name:api.tracks.get('demo-1').name,end:api.tracks.get('demo-1').cueDetails[0].end,sequence:api.s.playlists.find(p=>p.name==='Night set').tracks,playing:api.s.decks.some(d=>d.playing)};});
  assert.deepEqual(restored,{name:'夜 & 光',end:3.25,sequence:['demo-2','demo-1','demo-2'],playing:false});
  await page.locator('[data-playlist]').filter({hasText:'Night set'}).click();
