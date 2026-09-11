@@ -41,3 +41,6 @@ for ix,(name,bpm,midi,key) in enumerate(specs):
     records.append(dict(id=f'demo-{ix}',name=name,artist='SeekDeck · DEMO',filename=file,source=f'./demos/{file}',demo=True,duration=n/sr,size=n*4,bpm=bpm,bpmConfidence=100,key=key,keyConfidence=100,gridOffset=0,cues=[0,beat*8,beat*16,beat*24,None,None,None,None],rating=0,comment='SeekDeckオリジナルの合成デモ音源。',peaks=peaks,addedAt=0))
 (ROOT/'demo-data.js').write_text('export const DEMOS = '+json.dumps(records,ensure_ascii=False,separators=(',',':'))+';\n')
 print(f'Generated {len(records)} original loops ({sum((ROOT/"demos"/f"demo-{i}.wav").stat().st_size for i in range(4))/1048576:.1f} MiB)')
+
+import subprocess
+subprocess.run(['node',str(ROOT.parent/'tools/analyse-demo-waveforms.mjs')],check=True)

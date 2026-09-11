@@ -4,3 +4,4 @@ node_modules/
 *.log
 release-artifacts/
 __pycache__/
+test-results/
