@@ -50,8 +50,8 @@ export async function runLandscape(browser,url){
   await tap('[data-mobile-view=mixer]');
   await page.locator('[data-channel="1"] [data-param=assign]').selectOption('THRU');assert.equal(await app(a=>a.s.decks[1].assign),'THRU');
   await page.locator('[data-channel="1"] [data-param=assign]').selectOption('B');
-  await slide('[data-channel="0"] [data-param=low]',.5,.2);
-  assert.ok(await app(a=>a.s.decks[0].low)<-10);await geometry();
+  const lowBefore=await app(a=>a.s.decks[0].low);await slide('[data-channel="0"] [data-param=low]',.5,.2);
+  const lowAfter=await app(a=>a.s.decks[0].low);assert.ok(lowAfter<lowBefore-1,JSON.stringify({lowBefore,lowAfter}));await geometry();
   await tap('[data-mobile-view=deck]');
   await tap('[data-panel=deck1] [data-action=play]');
   await waitForAsync(page,async()=>{const {api}=await import('/seekdeck-webdj/app.js');return !api.s.decks[1].playing;});

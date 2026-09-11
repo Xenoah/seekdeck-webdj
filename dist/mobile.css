@@ -87,3 +87,5 @@ body[data-ui=mobile] .dialog-body{padding:14px;overflow-wrap:anywhere}
 body[data-ui=mobile] .dialog-body label{flex-wrap:wrap}
 body[data-ui=mobile] .dialog-head{gap:10px;padding:12px}
 body[data-ui=mobile] .setting-grid{grid-template-columns:1fr}
+
+body[data-ui=mobile] .knob,body[data-ui=mobile] .knob input[type=range]{touch-action:none}
