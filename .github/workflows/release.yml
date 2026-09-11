@@ -2,7 +2,7 @@ name: Release
 on:
   push:
     branches: [main]
-    paths: [package.json, 'releases/**', tools/publish-release.mjs, .github/workflows/release.yml]
+    paths: [package.json, 'releases/**', 'dist/**', 'tests/**', 'tools/**', .github/workflows/release.yml]
   workflow_dispatch:
 permissions:
   contents: read

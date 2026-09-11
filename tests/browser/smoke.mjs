@@ -33,8 +33,13 @@ try{
   await page.locator('[data-waveform-style]').selectOption('3band');
   await page.locator('[data-panel=deck0] [data-action=play]').click();
   await page.waitForFunction(async()=>{const {api}=await import('/seekdeck-webdj/app.js');return api.s.decks[0].playing&&api.engine.positions[0]>.2;});
+  // Loop the short demo so transport continuity does not depend on import duration.
+  await page.locator('[data-panel=deck0] [data-action=loop]').click();
+  const transportState=()=>page.evaluate(async()=>{const {api}=await import('/seekdeck-webdj/app.js');return {playing:api.s.decks[0].playing,position:api.position(0),contextTime:api.engine.context.currentTime,duration:api.getTrack(0).duration,loop:api.s.decks[0].loop,errors:Array.from(document.querySelectorAll('.toast.error')).map(e=>e.textContent)};});
+  console.log('Before import:',await transportState());
   await page.locator('#audio-files').setInputFiles('dist/demos/demo-0.wav');
   await page.waitForFunction(async()=>{const {api}=await import('/seekdeck-webdj/app.js');return !api.importing&&[...api.tracks.values()].some(t=>!t.demo&&t.waveform?.version===1&&t.waveform.low.some(x=>x>0));},{},{timeout:60000});
+  console.log('After import:',await transportState());
   assert.equal(await page.evaluate(async()=>{const {api}=await import('/seekdeck-webdj/app.js');return api.s.decks[0].playing;}),true,'Playback stopped during waveform analysis');
   await page.locator('[data-panel=deck0] [data-action=play]').click();
   await page.waitForTimeout(900);
