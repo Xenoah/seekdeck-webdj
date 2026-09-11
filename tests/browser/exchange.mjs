@@ -1,3 +1,4 @@
+import {waitForAsync} from './poll.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 export async function runExchange(page,url){
@@ -20,7 +21,7 @@ export async function runExchange(page,url){
  await page.locator('#exchange-file').setInputFiles('tests/fixtures/exchange.xml');await page.locator('[data-action=exchange-apply]').click();await page.getByRole('heading',{name:'読み込み完了'}).waitFor();await page.locator('.dialog-head [data-action=close-dialog]').click();
  assert.equal(await page.evaluate(async()=>{const {api}=await import('/seekdeck-webdj/app.js');return api.tracks.get('demo-1').name;}),'夜 & 光');
  await page.locator('[data-panel=deck1] [data-pad="0"]').click();
- await page.waitForFunction(async()=>{const {api}=await import('/seekdeck-webdj/app.js');const d=api.s.decks[1];return d.playing&&d.loop.enabled&&d.loop.start===1.25&&d.loop.end===3.25;});
+ await waitForAsync(page,async()=>{const {api}=await import('/seekdeck-webdj/app.js');const d=api.s.decks[1];return d.playing&&d.loop.enabled&&d.loop.start===1.25&&d.loop.end===3.25;});
  await page.locator('[data-panel=deck1] [data-action=play]').click();
  await page.locator('[data-action=library-menu]').click();await page.locator('[data-action=exchange]').click();await page.locator('[data-action=exchange-export-dialog]').click();await page.locator('#exchange-format').selectOption('nml');await page.locator('#exchange-base').fill('C:/Music');
  const [download]=await Promise.all([page.waitForEvent('download'),page.locator('[data-action=exchange-export]').click()]);const path=await download.path(),text=fs.readFileSync(path,'utf8');assert.match(text,/TYPE="5" START="1250" LEN="2000"/);assert.match(text,/NML VERSION="19"/);

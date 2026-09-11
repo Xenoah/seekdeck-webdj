@@ -1,3 +1,4 @@
+import {waitForAsync} from './poll.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -37,12 +38,12 @@ try{
   // Set the loop before starting the short demo so it cannot finish before the import check begins.
   await page.locator('[data-panel=deck0] [data-action=loop]').click();
   await page.locator('[data-panel=deck0] [data-action=play]').click();
-  await page.waitForFunction(async()=>{const {api}=await import('/seekdeck-webdj/app.js');return api.s.decks[0].playing&&api.engine.positions[0]>.2;});
+  await waitForAsync(page,async()=>{const {api}=await import('/seekdeck-webdj/app.js');return api.s.decks[0].playing&&api.engine.positions[0]>.2;});
   const transportState=()=>page.evaluate(async()=>{const {api}=await import('/seekdeck-webdj/app.js');return {playing:api.s.decks[0].playing,position:api.position(0),contextTime:api.engine.context.currentTime,duration:api.getTrack(0).duration,loop:api.s.decks[0].loop,errors:Array.from(document.querySelectorAll('.toast.error')).map(e=>e.textContent)};});
   const before=await transportState();console.log('Before import:',before);
   assert.equal(before.playing,true,'The demo must be playing before the import continuity check');
   await page.locator('#audio-files').setInputFiles('dist/demos/demo-0.wav');
-  await page.waitForFunction(async()=>{const {api}=await import('/seekdeck-webdj/app.js');return !api.importing&&[...api.tracks.values()].some(t=>!t.demo&&t.waveform?.version===1&&t.waveform.low.some(x=>x>0));},{},{timeout:60000});
+  await waitForAsync(page,async()=>{const {api}=await import('/seekdeck-webdj/app.js');return !api.importing&&[...api.tracks.values()].some(t=>!t.demo&&t.waveform?.version===1&&t.waveform.low.some(x=>x>0));},{},{timeout:60000});
   console.log('After import:',await transportState());
   assert.equal(await page.evaluate(async()=>{const {api}=await import('/seekdeck-webdj/app.js');return api.s.decks[0].playing;}),true,'Playback stopped during waveform analysis');
   await page.locator('[data-panel=deck0] [data-action=play]').click();

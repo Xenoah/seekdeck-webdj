@@ -1,3 +1,4 @@
+import {waitForAsync} from './poll.mjs';
 import assert from 'node:assert/strict';
 export async function runMobile(browser,url){
  const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2}),page=await context.newPage(),errors=[];
@@ -30,7 +31,7 @@ export async function runMobile(browser,url){
   await page.locator('[data-panel=deck3] [data-action=play]').tap();
   await page.locator('[data-panel=deck3] [data-action=cue-delete]').tap();
   await page.locator('[data-panel=deck3] [data-pad="0"]').tap();
-  await page.waitForFunction(async()=>{const {api}=await import('/seekdeck-webdj/app.js');return api.getTrack(3).cues[0]===null;});
+  await waitForAsync(page,async()=>{const {api}=await import('/seekdeck-webdj/app.js');return api.getTrack(3).cues[0]===null;});
   await page.setViewportSize({width:360,height:780});await overflow();
   await page.screenshot({path:'test-results/mobile-deck.png',fullPage:true});
   await page.setViewportSize({width:844,height:390});await overflow();

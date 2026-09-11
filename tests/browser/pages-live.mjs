@@ -1,3 +1,4 @@
+import {waitForAsync} from './poll.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {chromium} from 'playwright';
@@ -19,7 +20,7 @@ try{
    assert.equal(await page.locator('[data-app-version]').textContent(),'v'+version,'The new Pages release is not visible yet');
    await page.locator('[data-panel=deck0] [data-action=loop]').click();
    await page.locator('[data-panel=deck0] [data-action=play]').click();
-   await page.waitForFunction(async()=>{const {api}=await import(new URL('./app.js',location.href).href);return api.s.decks[0].playing&&api.position(0)>.2;},{},{timeout:15000});
+   await waitForAsync(page,async()=>{const {api}=await import(new URL('./app.js',location.href).href);return api.s.decks[0].playing&&api.position(0)>.2;},{},{timeout:15000});
    await page.locator('[data-panel=deck0] [data-action=play]').click();
    assert.deepEqual(errors,[]);
    fs.mkdirSync('test-results',{recursive:true});await page.screenshot({path:'test-results/published-pages.png',fullPage:true});
