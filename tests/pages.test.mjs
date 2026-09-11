@@ -16,3 +16,14 @@ test('offline cache cleanup leaves other applications intact',async()=>{
  await new Promise((resolve,reject)=>events.activate({waitUntil:p=>p.then(resolve,reject)}));
  assert.deepEqual(deleted,['seekdeck:/seekdeck-webdj/:old']);
 });
+test('offline entry with query parameters uses the app cache without intercepting other paths',async()=>{
+ const events={},lookups=[],base='https://example.github.io/seekdeck-webdj/dist/',cached={html:'DJ app'};
+ const context={URL,Set,Promise,fetch:async()=>{throw new Error('offline');},self:{location:new URL(base+'sw.js'),addEventListener:(name,fn)=>events[name]=fn},caches:{open:async()=>({match:async key=>{lookups.push(key);return key===base?cached:undefined;}})}};
+ vm.runInNewContext(fs.readFileSync('dist/sw.js','utf8'),context);
+ let response;
+ events.fetch({request:{method:'GET',mode:'navigate',url:base+'?v=0.5.1'},respondWith:p=>{response=p;}});
+ assert.equal(await response,cached);assert.deepEqual(lookups,[base]);
+ for(const url of ['https://example.github.io/another-app/?v=1',base+'unknown.html?v=1','https://other.example/seekdeck-webdj/dist/?v=1']){
+  events.fetch({request:{method:'GET',mode:'navigate',url},respondWith:()=>assert.fail('Out-of-scope request intercepted')});
+ }
+});
