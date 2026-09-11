@@ -2,10 +2,11 @@ name: GitHub Pages
 on:
   push:
     branches: [main]
-    paths: ['dist/**', 'tests/**', .github/workflows/pages.yml]
+    paths: [index.html, .nojekyll, 'dist/**', 'tests/**', 'tools/**', .github/workflows/pages.yml]
   workflow_dispatch:
 permissions:
   contents: read
+  pages: read
 concurrency:
   group: github-pages
   cancel-in-progress: false
@@ -38,15 +39,26 @@ jobs:
           name: browser-verification
           path: test-results
           retention-days: 7
-      - name: Check initial Pages setup
+      - name: Check Pages publishing source
         id: pages-state
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          enabled="$(gh api "repos/$GITHUB_REPOSITORY" --jq '.has_pages')"
-          echo "enabled=$enabled" >> "$GITHUB_OUTPUT"
-          if [ "$enabled" != true ]; then
-            echo 'Pages is not enabled yet. Open Settings > Pages, select GitHub Actions as Source, then run this workflow.' >> "$GITHUB_STEP_SUMMARY"
+          configured="$(gh api "repos/$GITHUB_REPOSITORY" --jq '.has_pages')"
+          mode=disabled
+          if [ "$configured" = true ]; then
+            mode="$(gh api "repos/$GITHUB_REPOSITORY/pages" --jq '.build_type')"
+          fi
+          echo "Pages publishing source: $mode"
+          if [ "$mode" = workflow ]; then
+            echo 'enabled=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'enabled=false' >> "$GITHUB_OUTPUT"
+            if [ "$mode" = legacy ]; then
+              echo 'Branch publishing is active. GitHub publishes the repository root; index.html opens the app in dist/. This workflow will not replace that deployment.' >> "$GITHUB_STEP_SUMMARY"
+            else
+              echo 'Pages is not enabled yet. Select main / (root) or GitHub Actions in Settings > Pages.' >> "$GITHUB_STEP_SUMMARY"
+            fi
           fi
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
         if: steps.pages-state.outputs.enabled == 'true'

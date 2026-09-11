@@ -2,7 +2,7 @@ name: Release
 on:
   push:
     branches: [main]
-    paths: [package.json, 'releases/**', 'dist/**', 'tests/**', 'tools/**', .github/workflows/release.yml]
+    paths: [package.json, index.html, .nojekyll, 'releases/**', 'dist/**', 'tests/**', 'tools/**', .github/workflows/release.yml]
   workflow_dispatch:
 permissions:
   contents: read
@@ -32,6 +32,13 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Browser integration check
         run: node tests/browser/smoke.mjs
+      - name: Verify the published Pages app
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "$(gh api "repos/$GITHUB_REPOSITORY" --jq '.has_pages')" = true ]; then
+            PAGES_URL="https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}/" node tests/browser/pages-live.mjs
+          fi
       - name: Save browser verification images
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

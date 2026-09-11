@@ -14,7 +14,7 @@ output = ROOT / "release-artifacts"
 output.mkdir(exist_ok=True)
 archive = output / f"{prefix}.zip"
 paths = []
-for name in ("README.md", "package.json", "dist", "tests", "tools", "releases"):
+for name in ("README.md", "package.json", "index.html", ".nojekyll", "dist", "tests", "tools", "releases"):
     source = ROOT / name
     paths.extend([source] if source.is_file() else source.rglob("*"))
 with zipfile.ZipFile(archive, "w", compression=zipfile.ZIP_DEFLATED) as bundle:

@@ -4,13 +4,15 @@ import path from 'node:path';
 import {createServer} from 'node:http';
 import {chromium} from 'playwright';
 
-const root=path.resolve('dist'),prefix='/seekdeck-webdj/';
+const root=path.resolve('dist'),prefix='/seekdeck-webdj/',branchPrefix='/branch-pages/seekdeck-webdj/';
 const types={'.html':'text/html','.js':'application/javascript','.css':'text/css','.svg':'image/svg+xml','.webmanifest':'application/manifest+json','.wav':'audio/wav'};
 const server=createServer((req,res)=>{
   const url=new URL(req.url,'http://localhost');
-  if(!url.pathname.startsWith(prefix)){res.writeHead(404).end();return;}
-  const file=path.resolve(root,decodeURIComponent(url.pathname.slice(prefix.length)||'index.html'));
-  if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile()){res.writeHead(404).end();return;}
+  const branch=url.pathname.startsWith(branchPrefix),route=branch?branchPrefix:prefix,base=branch?path.resolve('.'):root;
+  if(!url.pathname.startsWith(route)){res.writeHead(404).end();return;}
+  let file=path.resolve(base,decodeURIComponent(url.pathname.slice(route.length)||'index.html'));
+  if(file.startsWith(base+path.sep)&&fs.existsSync(file)&&fs.statSync(file).isDirectory())file=path.join(file,'index.html');
+  if(!file.startsWith(base+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile()){res.writeHead(404).end();return;}
   res.writeHead(200,{'Content-Type':types[path.extname(file)]||'application/octet-stream'});fs.createReadStream(file).pipe(res);
 });
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
@@ -19,6 +21,7 @@ fs.mkdirSync('test-results',{recursive:true});
 let browser;
 try{
   browser=await chromium.launch({headless:true});
+  await (await import('./pages-entry.mjs')).runPagesEntry(browser,'http://127.0.0.1:'+server.address().port+branchPrefix);
   const page=await browser.newPage({viewport:{width:1440,height:1000}}),errors=[];
   page.on('pageerror',e=>errors.push(e.message));
   await page.goto(url);

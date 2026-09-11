@@ -10,7 +10,14 @@
 
 [最新版と配布ZIP](https://github.com/Xenoah/seekdeck-webdj/releases/latest) · [変更履歴](releases/)
 
-Pagesの初回設定は [Settings → Pages](https://github.com/Xenoah/seekdeck-webdj/settings/pages) で **Source: GitHub Actions** を選び、[GitHub Pages](https://github.com/Xenoah/seekdeck-webdj/actions/workflows/pages.yml) の **Run workflow** を実行します。以降のアプリ更新はテスト後に自動配信します。未設定時は配信ファイルの作成までを行います。
+[SeekDeckを開く](https://xenoah.github.io/seekdeck-webdj/)
+
+Pagesは次の両方式に対応しています。設定は [Settings → Pages](https://github.com/Xenoah/seekdeck-webdj/settings/pages) で確認できます。
+
+- **Deploy from a branch → main → / (root)**：通常の公開URLから自動的に `dist/` のDJ画面を開きます。READMEを入口にしません。すでにこの方式なら変更不要です。
+- **GitHub Actions**：[GitHub Pages](https://github.com/Xenoah/seekdeck-webdj/actions/workflows/pages.yml) の **Run workflow** を実行すると、`dist/` を公開ルートとして配信します。以降のアプリ更新はテスト後に自動配信します。
+
+二つの配信処理の競合を避けるため、ワークフローはPagesの公開方式を確認してから配信します。
 
 初回有効化には管理権限が必要です（[GitHub公式の権限要件](https://github.com/actions/configure-pages/blob/main/action.yml)）。オリジンごとに音源と設定の保存領域は分かれます。
 

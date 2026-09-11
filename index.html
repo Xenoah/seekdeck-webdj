@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0f14">
+  <title>SeekDeck — Local mixing studio</title>
+  <script>
+    const target = new URL('./dist/', window.location.href);
+    target.search = window.location.search;
+    target.hash = window.location.hash;
+    window.location.replace(target.href);
+  </script>
+  <style>body{margin:0;padding:15vh 24px;background:#0b0f14;color:#e7edf5;font:16px system-ui;text-align:center}a{color:#8ce4fd}</style>
+</head>
+<body>
+  <p><a href="./dist/">SeekDeckを開く</a></p>
+  <noscript><p>SeekDeckを使うにはJavaScriptを有効にしてください。</p></noscript>
+</body>
+</html>
