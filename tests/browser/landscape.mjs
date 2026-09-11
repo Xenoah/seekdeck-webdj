@@ -48,6 +48,8 @@ export async function runLandscape(browser,url){
   await page.locator('[data-panel=deck1] [data-param="fx.type"]').selectOption('flanger');
   assert.equal(await app(a=>a.s.decks[1].fx.type),'flanger');await geometry();
   await tap('[data-mobile-view=mixer]');
+  await page.locator('[data-channel="1"] [data-param=assign]').selectOption('THRU');assert.equal(await app(a=>a.s.decks[1].assign),'THRU');
+  await page.locator('[data-channel="1"] [data-param=assign]').selectOption('B');
   await slide('[data-channel="0"] [data-param=low]',.5,.2);
   assert.ok(await app(a=>a.s.decks[0].low)<-10);await geometry();
   await tap('[data-mobile-view=deck]');
