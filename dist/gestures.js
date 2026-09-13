@@ -1,4 +1,5 @@
-import {clamp,quantize} from './core.js';
+import {quantizeTrack,advanceBeats} from './audio/beatgrid.js';
+import {clamp} from './core.js';
 
 // Each finger owns its gesture until release, cancellation or removal of its
 // control. A second finger on the same control cannot steal the first one's hold.
@@ -23,9 +24,9 @@ export function attachGestures(a,doc=document,win=window){
   if(over){const i=Number(over.dataset.overview),r=over.getBoundingClientRect();a.seekDeck(i,(e.clientX-r.left)/r.width*(a.getTrack(i)?.duration||0));return;}
   if(wheel){const i=Number(wheel.dataset.jog);if(!a.engine.has(a.s.decks[i].trackId)){a.toast('一度再生するとジョグを使えます。');return;}
    if(capture(e,{kind:'jog',el:wheel,i,x:e.clientX,t:e.timeStamp,timer:null}))a.engine.scratch(i,true,0);return;}
-  if(nud){const i=Number(nud.dataset.deck);if(capture(e,{kind:'nudge',el:nud,i}))a.engine.applyDeck(i,{...a.s.decks[i],rate:a.s.decks[i].rate*(1+Number(nud.dataset.nudge)*.035)},a.getTrack(i)?.bpm);return;}
+  if(nud){const i=Number(nud.dataset.deck);if(capture(e,{kind:'nudge',el:nud,i})){a.disengageSync?.(i);a.engine.applyDeck(i,{...a.s.decks[i],rate:a.s.decks[i].rate*(1+Number(nud.dataset.nudge)*.035)},a.getTrack(i)?.bpm);}return;}
   if(pad){const i=Number(pad.dataset.deck),t=a.getTrack(i);if(a.s.decks[i].padMode!=='roll'||!t||!a.s.decks[i].playing)return;
-   if(capture(e,{kind:'roll',el:pad,i})){const beats=[.125,.25,.5,1,2,4,8,16][Number(pad.dataset.pad)],start=quantize(a.position(i),t.bpm,t.gridOffset);pad.classList.add('pressed');a.engine.roll(i,true,start,Math.min(t.duration,start+beats*60/t.bpm));}}
+   if(capture(e,{kind:'roll',el:pad,i})){const beats=[.125,.25,.5,1,2,4,8,16][Number(pad.dataset.pad)],start=quantizeTrack(a.position(i),t);pad.classList.add('pressed');a.engine.roll(i,true,start,Math.min(t.duration,advanceBeats(start,beats,t)));}}
  });
  doc.addEventListener('pointermove',e=>{
   const g=active.get(e.pointerId);if(!g)return;e.preventDefault();

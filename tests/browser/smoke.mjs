@@ -53,7 +53,8 @@ try{
   assert.equal(await page.evaluate(async()=>{const {api}=await import('/seekdeck-webdj/app.js');return api.s.decks.some(d=>d.playing);}),false);
   assert.deepEqual(errors,[]);
   await page.screenshot({path:'test-results/desktop-3band.png',fullPage:true});
-  await (await import('./stability.mjs')).runStability(browser,url);
+  await (await import('./audio-sync.mjs')).runAudioSync(browser,url);
+await (await import('./stability.mjs')).runStability(browser,url);
 await (await import('./multitouch.mjs')).runMultitouch(browser,url);
   await (await import('./landscape.mjs')).runLandscape(browser,url);
   if(fs.existsSync('tests/browser/mobile.mjs'))await (await import('./mobile.mjs')).runMobile(browser,url);
