@@ -9,7 +9,7 @@ export async function runStability(browser,url){
   await page.goto(url);await page.waitForSelector('[data-panel="deck0"]');
   const module=new URL('app.js',url).pathname;
   await waitForAsync(page,async module=>!!(await import(module)).api.runtime,module);
-  await page.locator('#audio-start').click();
+  await resumeFromSettings(page);
   await page.evaluate(async module=>{const {api}=await import(module);api.loopDeck(0);api.loopDeck(1);await api.playDeck(0,true);await api.playDeck(1,true);},module);
   await waitForAsync(page,async module=>{const {api}=await import(module);return api.engine.playing[0]&&api.engine.playing[1]&&api.position(0)>.2&&api.position(1)>.2;},module);
   // Repeated suspend/resume and rotations exercise real AudioWorklet message ordering.
@@ -22,7 +22,7 @@ export async function runStability(browser,url){
    await page.waitForTimeout(100);
    assert.equal(await page.evaluate(async module=>(await import(module)).api.s.decks.some(d=>d.playing),module),false);
    await page.setViewportSize(cycle%2?{width:844,height:390}:{width:390,height:844});
-   await page.locator('#audio-start').click();
+   await resumeFromSettings(page);
    await waitForAsync(page,async module=>{const {api}=await import(module);return !api.runtime.needsResume&&api.engine.playing[0]&&api.engine.playing[1]&&api.engine.context.state==='running';},module);
    assert(held[0]>=0&&held[1]>=0);
   }
@@ -30,11 +30,11 @@ export async function runStability(browser,url){
   await page.evaluate(async module=>{const {api}=await import(module);await api.engine.context.suspend();},module);
   await waitForAsync(page,async module=>(await import(module)).api.runtime.needsResume,module);
   await page.evaluate(async module=>{const {api}=await import(module);await api.playDeck(0,false);},module);
-  await page.locator('#audio-start').click();
+  await resumeFromSettings(page);
   await waitForAsync(page,async module=>{const {api}=await import(module);return !api.runtime.needsResume&&api.engine.playing[1];},module);
   assert.equal(await page.evaluate(async module=>(await import(module)).api.s.decks[0].playing,module),false);
   await page.evaluate(async module=>{const {api}=await import(module);await api.playDeck(1,false);},module);
-  await page.locator('[data-action="settings"]').first().click();
+  await page.locator('[data-action="settings"]:visible').first().click();
   await page.locator('[data-runtime-awake]').check();
   const downloadEvent=page.waitForEvent('download');
   await page.locator('[data-runtime-action="diagnostics"]').click();
@@ -47,3 +47,5 @@ export async function runStability(browser,url){
   console.log('Stability: repeated real AudioContext interruption/resume, rotations, explicit stop, diagnostics export, and stopped reload passed. Physical device latency is not measured.');
  }finally{await context.close();}
 }
+
+async function resumeFromSettings(page){await page.locator('[data-action="settings"]:visible').first().click();await page.locator('[data-runtime-action="resume"]').click();await page.locator('#dialog [data-action="close-dialog"]').click();}
