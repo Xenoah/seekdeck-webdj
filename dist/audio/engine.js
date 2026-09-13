@@ -2,13 +2,14 @@ import {xfadeGains,clamp} from '../core.js';
 export class AudioEngine extends EventTarget{
  constructor(){super();this.context=null;this.ready=null;this.buffers=new Map();this.pending=new Map();this.positions=[0,0,0,0];this.playing=[false,false,false,false];this.sampleSlots=[];this.channels=[];this.recording=false;this.recordChunks=[];this.loadedIds=[null,null,null,null];this.maxBytes=512*1024*1024;this.meterArray=new Float32Array(512);}
  emit(type,detail){this.dispatchEvent(new CustomEvent(type,{detail}));}
+ async resumeContext(c){if(c.state==='closed')throw new Error('音声エンジンが終了しています。ページを再読み込みしてください。');let timer;try{await Promise.race([c.resume(),new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error('音声出力を開始できません。画面を開き、着信や他アプリの音声を終了して再試行してください。')),8000);})]);}finally{clearTimeout(timer);}if(c.state!=='running')throw new Error('音声出力が中断されています。再開を押してください。');}
  async init(){
-  if(this.ready){await this.ready;await this.context.resume();if(this.cueContext)await this.cueContext.resume();return;}
+  if(this.ready){await this.ready;await this.resumeContext(this.context);if(this.cueContext)await this.resumeContext(this.cueContext);return;}
   this.ready=this.setup();try{await this.ready;}catch(e){this.ready=null;await this.context?.close().catch(()=>{});this.context=null;throw e;}
  }
  async setup(){
   if(!globalThis.AudioContext||!globalThis.AudioWorkletNode)throw new Error('このブラウザはAudioWorkletに対応していません。');
-  const c=this.context=new AudioContext({latencyHint:'interactive'});await c.resume();await c.audioWorklet.addModule(new URL('./processor.js',import.meta.url));
+  const c=this.context=new AudioContext({latencyHint:'interactive'});await this.resumeContext(c);await c.audioWorklet.addModule(new URL('./processor.js',import.meta.url));
   this.node=new AudioWorkletNode(c,'orbit-transport',{numberOfInputs:0,numberOfOutputs:5,outputChannelCount:[2,2,2,2,2]});this.node.onprocessorerror=()=>this.emit('error','音声エンジンが停止しました。ページを再読み込みしてください。');
   this.node.port.onmessage=({data:m})=>{if(m.type==='positions'){this.positions=m.positions;this.playing=m.playing;this.sampleSlots=m.samples;}else if(m.type==='buffered'){this.pending.get(m.id)?.();this.pending.delete(m.id);}else if(m.type==='ended'){this.playing[m.deck]=false;this.emit('ended',m.deck);}};
   this.masterBus=c.createGain();this.masterGain=c.createGain();this.masterGain.gain.value=.75;this.limiter=c.createDynamicsCompressor();Object.assign(this.limiter.threshold,{value:-1});this.limiter.knee.value=0;this.limiter.ratio.value=20;this.limiter.attack.value=.002;this.limiter.release.value=.1;this.masterMeter=c.createAnalyser();this.masterMeter.fftSize=1024;this.masterBus.connect(this.masterGain).connect(this.limiter).connect(this.masterMeter);
@@ -57,7 +58,7 @@ export class AudioEngine extends EventTarget{
    if(m.cueSink===m.masterSink||m.cueSink==='default')throw new Error('CUEにはMASTERと異なる出力機器を指定してください。');
    if(!c.setSinkId)throw new Error('このブラウザでは別デバイスへのCUE出力に対応していません。');
    if(!this.cueContext){this.cueDestination=c.createMediaStreamDestination();this.cueContext=new AudioContext({latencyHint:'interactive'});this.cueStreamSource=this.cueContext.createMediaStreamSource(this.cueDestination.stream);this.cueStreamSource.connect(this.cueContext.destination);}
-   await this.cueContext.setSinkId(m.cueSink);await this.cueContext.resume();
+   await this.cueContext.setSinkId(m.cueSink);await this.resumeContext(this.cueContext);
   }
   // Keep recording and the master-to-cue mix connected; replace output branches only.
   try{this.masterMeter.disconnect();}catch{}try{this.cueLevel.disconnect();}catch{}for(const n of this.routingNodes||[])try{n.disconnect();}catch{}this.routingNodes=[];
