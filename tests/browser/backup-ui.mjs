@@ -8,7 +8,7 @@ export async function runBackupUI(browser,url){
   await context.addInitScript(()=>{Object.defineProperty(window,'showSaveFilePicker',{value:undefined,configurable:true});});
   page.on('pageerror',error=>errors.push(error.message));
   try{
-    await page.goto(url);await page.waitForSelector('[data-wave="0"]');
+    await page.goto(url);await page.waitForSelector('[data-panel="deck0"]');
     await waitForAsync(page,async()=>{const {api}=await import(new URL('app.js',location.href));return Boolean(api.backupUI);});
     await page.touchscreen.tap(2,2);
     const started=await page.evaluate(async()=>{
