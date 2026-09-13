@@ -1,6 +1,7 @@
 import {xfadeGains,clamp} from '../core.js';
+import {startPersistentRecording} from '../recording.js';
 export class AudioEngine extends EventTarget{
- constructor(){super();this.context=null;this.ready=null;this.buffers=new Map();this.pending=new Map();this.positions=[0,0,0,0];this.rates=[1,1,1,1];this.syncStates=['off','off','off','off'];this.syncMasters=[-1,-1,-1,-1];this.playing=[false,false,false,false];this.sampleSlots=[];this.channels=[];this.recording=false;this.recordChunks=[];this.loadedIds=[null,null,null,null];this.maxBytes=512*1024*1024;this.meterArray=new Float32Array(512);}
+ constructor(){super();this.context=null;this.ready=null;this.buffers=new Map();this.pending=new Map();this.positions=[0,0,0,0];this.rates=[1,1,1,1];this.syncStates=['off','off','off','off'];this.syncMasters=[-1,-1,-1,-1];this.playing=[false,false,false,false];this.sampleSlots=[];this.channels=[];this.recording=false;this.recordingSession=null;this.recordingStarting=null;this.recordingStopping=null;this.loadedIds=[null,null,null,null];this.maxBytes=512*1024*1024;this.meterArray=new Float32Array(512);}
  emit(type,detail){this.dispatchEvent(new CustomEvent(type,{detail}));}
  async resumeContext(c){if(c.state==='closed')throw new Error('音声エンジンが終了しています。ページを再読み込みしてください。');let timer;try{await Promise.race([c.resume(),new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error('音声出力を開始できません。画面を開き、着信や他アプリの音声を終了して再試行してください。')),8000);})]);}finally{clearTimeout(timer);}if(c.state!=='running')throw new Error('音声出力が中断されています。再開を押してください。');}
  async init(){
@@ -71,8 +72,34 @@ export class AudioEngine extends EventTarget{
   this.route=m.route;
  }
  meter(node){if(!node)return 0;node.getFloatTimeDomainData(this.meterArray);let max=0;for(let i=0;i<this.meterArray.length;i++)max=Math.max(max,Math.abs(this.meterArray[i]));return max;}
- startRecording(){if(!globalThis.MediaRecorder)throw new Error('このブラウザはミックス録音に対応していません。');if(this.recording)return;const mime=['audio/webm;codecs=opus','audio/ogg;codecs=opus','audio/mp4'].find(s=>MediaRecorder.isTypeSupported(s));this.recorder=new MediaRecorder(this.recordDestination.stream,mime?{mimeType:mime,audioBitsPerSecond:256000}:undefined);this.recordChunks=[];this.recorder.ondataavailable=e=>{if(e.data.size)this.recordChunks.push(e.data);};this.recorder.onerror=e=>{this.emit('error','録音中にエラーが発生しました。残っている音声を停止して保存してください。');};this.recorder.start(1000);this.recording=true;this.recordStarted=Date.now();}
- stopRecording(){return new Promise(resolve=>{if(!this.recording){resolve(null);return;}this.recorder.onstop=()=>{const blob=new Blob(this.recordChunks,{type:this.recorder.mimeType});this.recordChunks=[];this.recording=false;resolve(blob);};this.recorder.stop();});}
+ async startRecording(){
+  if(this.recordingStarting)return this.recordingStarting;
+  const stopping=this.recordingStopping;
+  const operation=(async()=>{
+   if(stopping)await stopping;
+   if(this.recording)return this.recordingSession;
+   if(!this.recordDestination?.stream)throw new Error('オーディオを開始してから録音してください。');
+   const session=await startPersistentRecording(this.recordDestination.stream,{onError:error=>this.emit('error',error.message)});
+   this.recordingSession=session;this.recording=true;this.recordStarted=session.startedAt;
+   session.stopped.then(meta=>{
+    if(this.recordingSession===session)this.recording=false;
+    this.emit('recording-stopped',meta);
+   },error=>{
+    if(this.recordingSession===session)this.recording=false;
+    this.emit('error',error.message||'録音の終了処理に失敗しました。保存済み録音を確認してください。');
+   });
+   return session;
+  })();
+  this.recordingStarting=operation;
+  try{return await operation;}finally{if(this.recordingStarting===operation)this.recordingStarting=null;}
+ }
+ async stopRecording(){
+  if(this.recordingStarting)await this.recordingStarting;
+  if(this.recordingStopping)return this.recordingStopping;
+  if(!this.recordingSession||!this.recording)return null;
+  const operation=this.recordingSession.stop();this.recordingStopping=operation;
+  try{return await operation;}finally{if(this.recordingStopping===operation)this.recordingStopping=null;}
+ }
  sample(slot,p){this.send({type:'sample',id:p.trackId,slot,start:p.start,duration:p.duration,gain:p.gain,loop:p.loop,toggle:p.loop});}
  stopSamples(){this.send({type:'stopSamples'});}
  get latency(){const c=this.context;if(!c)return null;return {base:c.baseLatency*1000,output:typeof c.outputLatency==='number'?c.outputLatency*1000:null,sampleRate:c.sampleRate,state:c.state};}
