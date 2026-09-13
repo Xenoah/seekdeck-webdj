@@ -1,0 +1,438 @@
+{
+  "format": "seekdeck-controller",
+  "version": 1,
+  "name": "Pioneer DJ DDJ-400 · Basic",
+  "midiMappings": [
+    {
+      "target": "deck.0.play",
+      "kind": "note",
+      "channel": 0,
+      "number": 11,
+      "mode": "absolute",
+      "deviceName": "DDJ-400"
+    },
+    {
+      "target": "deck.0.cue",
+      "kind": "note",
+      "channel": 0,
+      "number": 12,
+      "mode": "absolute",
+      "deviceName": "DDJ-400"
+    },
+    {
+      "target": "deck.0.sync",
+      "kind": "note",
+      "channel": 0,
+      "number": 88,
+      "mode": "absolute",
+      "deviceName": "DDJ-400"
+    },
+    {
+      "target": "deck.0.loop",
+      "kind": "note",
+      "channel": 0,
+      "number": 77,
+      "mode": "absolute",
+      "deviceName": "DDJ-400"
+    },
+    {
+      "target": "deck.0.cueOn",
+      "kind": "note",
+      "channel": 0,
+      "number": 84,
+      "mode": "absolute",
+      "deviceName": "DDJ-400"
+    },
+    {
+      "target": "deck.0.scratch",
+      "kind": "note",
+      "channel": 0,
+      "number": 54,
+      "mode": "absolute",
+      "deviceName": "DDJ-400",
+      "feedback": false
+    },
+    {
+      "target": "deck.0.jog",
+      "kind": "cc",
+      "channel": 0,
+      "number": 33,
+      "mode": "relative-offset",
+      "deviceName": "DDJ-400"
+    },
+    {
+      "target": "deck.0.jog",
+      "kind": "cc",
+      "channel": 0,
+      "number": 34,
+      "mode": "relative-offset",
+      "deviceName": "DDJ-400"
+    },
+    {
+      "target": "deck.0.jog",
+      "kind": "cc",
+      "channel": 0,
+      "number": 35,
+      "mode": "relative-offset",
+      "deviceName": "DDJ-400"
+    },
+    {
+      "target": "deck.0.rate",
+      "kind": "cc",
+      "channel": 0,
+      "number": 0,
+      "mode": "cc14",
+      "deviceName": "DDJ-400",
+      "center": 0.5
+    },
+    {
+      "target": "deck.0.volume",
+      "kind": "cc",
+      "channel": 0,
+      "number": 19,
+      "mode": "cc14",
+      "deviceName": "DDJ-400"
+    },
+    {
+      "target": "deck.0.gain",
+      "kind": "cc",
+      "channel": 0,
+      "number": 4,
+      "mode": "cc14",
+      "deviceName": "DDJ-400",
+      "center": 0.6666666666666666
+    },
+    {
+      "target": "deck.0.high",
+      "kind": "cc",
+      "channel": 0,
+      "number": 7,
+      "mode": "cc14",
+      "deviceName": "DDJ-400",
+      "center": 0.7142857142857143
+    },
+    {
+      "target": "deck.0.mid",
+      "kind": "cc",
+      "channel": 0,
+      "number": 11,
+      "mode": "cc14",
+      "deviceName": "DDJ-400",
+      "center": 0.7142857142857143
+    },
+    {
+      "target": "deck.0.low",
+      "kind": "cc",
+      "channel": 0,
+      "number": 15,
+      "mode": "cc14",
+      "deviceName": "DDJ-400",
+      "center": 0.7142857142857143
+    },
+    {
+      "target": "deck.0.filter",
+      "kind": "cc",
+      "channel": 6,
+      "number": 23,
+      "mode": "cc14",
+      "deviceName": "DDJ-400",
+      "center": 0.5
+    },
+    {
+      "target": "deck.0.hotcue0",
+      "kind": "note",
+      "channel": 7,
+      "number": 0,
+      "mode": "absolute",
+      "deviceName": "DDJ-400"
+    },
+    {
+      "target": "deck.0.hotcue1",
+      "kind": "note",
+      "channel": 7,
+      "number": 1,
+      "mode": "absolute",
+      "deviceName": "DDJ-400"
+    },
+    {
+      "target": "deck.0.hotcue2",
+      "kind": "note",
+      "channel": 7,
+      "number": 2,
+      "mode": "absolute",
+      "deviceName": "DDJ-400"
+    },
+    {
+      "target": "deck.0.hotcue3",
+      "kind": "note",
+      "channel": 7,
+      "number": 3,
+      "mode": "absolute",
+      "deviceName": "DDJ-400"
+    },
+    {
+      "target": "deck.0.hotcue4",
+      "kind": "note",
+      "channel": 7,
+      "number": 4,
+      "mode": "absolute",
+      "deviceName": "DDJ-400"
+    },
+    {
+      "target": "deck.0.hotcue5",
+      "kind": "note",
+      "channel": 7,
+      "number": 5,
+      "mode": "absolute",
+      "deviceName": "DDJ-400"
+    },
+    {
+      "target": "deck.0.hotcue6",
+      "kind": "note",
+      "channel": 7,
+      "number": 6,
+      "mode": "absolute",
+      "deviceName": "DDJ-400"
+    },
+    {
+      "target": "deck.0.hotcue7",
+      "kind": "note",
+      "channel": 7,
+      "number": 7,
+      "mode": "absolute",
+      "deviceName": "DDJ-400"
+    },
+    {
+      "target": "deck.1.play",
+      "kind": "note",
+      "channel": 1,
+      "number": 11,
+      "mode": "absolute",
+      "deviceName": "DDJ-400"
+    },
+    {
+      "target": "deck.1.cue",
+      "kind": "note",
+      "channel": 1,
+      "number": 12,
+      "mode": "absolute",
+      "deviceName": "DDJ-400"
+    },
+    {
+      "target": "deck.1.sync",
+      "kind": "note",
+      "channel": 1,
+      "number": 88,
+      "mode": "absolute",
+      "deviceName": "DDJ-400"
+    },
+    {
+      "target": "deck.1.loop",
+      "kind": "note",
+      "channel": 1,
+      "number": 77,
+      "mode": "absolute",
+      "deviceName": "DDJ-400"
+    },
+    {
+      "target": "deck.1.cueOn",
+      "kind": "note",
+      "channel": 1,
+      "number": 84,
+      "mode": "absolute",
+      "deviceName": "DDJ-400"
+    },
+    {
+      "target": "deck.1.scratch",
+      "kind": "note",
+      "channel": 1,
+      "number": 54,
+      "mode": "absolute",
+      "deviceName": "DDJ-400",
+      "feedback": false
+    },
+    {
+      "target": "deck.1.jog",
+      "kind": "cc",
+      "channel": 1,
+      "number": 33,
+      "mode": "relative-offset",
+      "deviceName": "DDJ-400"
+    },
+    {
+      "target": "deck.1.jog",
+      "kind": "cc",
+      "channel": 1,
+      "number": 34,
+      "mode": "relative-offset",
+      "deviceName": "DDJ-400"
+    },
+    {
+      "target": "deck.1.jog",
+      "kind": "cc",
+      "channel": 1,
+      "number": 35,
+      "mode": "relative-offset",
+      "deviceName": "DDJ-400"
+    },
+    {
+      "target": "deck.1.rate",
+      "kind": "cc",
+      "channel": 1,
+      "number": 0,
+      "mode": "cc14",
+      "deviceName": "DDJ-400",
+      "center": 0.5
+    },
+    {
+      "target": "deck.1.volume",
+      "kind": "cc",
+      "channel": 1,
+      "number": 19,
+      "mode": "cc14",
+      "deviceName": "DDJ-400"
+    },
+    {
+      "target": "deck.1.gain",
+      "kind": "cc",
+      "channel": 1,
+      "number": 4,
+      "mode": "cc14",
+      "deviceName": "DDJ-400",
+      "center": 0.6666666666666666
+    },
+    {
+      "target": "deck.1.high",
+      "kind": "cc",
+      "channel": 1,
+      "number": 7,
+      "mode": "cc14",
+      "deviceName": "DDJ-400",
+      "center": 0.7142857142857143
+    },
+    {
+      "target": "deck.1.mid",
+      "kind": "cc",
+      "channel": 1,
+      "number": 11,
+      "mode": "cc14",
+      "deviceName": "DDJ-400",
+      "center": 0.7142857142857143
+    },
+    {
+      "target": "deck.1.low",
+      "kind": "cc",
+      "channel": 1,
+      "number": 15,
+      "mode": "cc14",
+      "deviceName": "DDJ-400",
+      "center": 0.7142857142857143
+    },
+    {
+      "target": "deck.1.filter",
+      "kind": "cc",
+      "channel": 6,
+      "number": 24,
+      "mode": "cc14",
+      "deviceName": "DDJ-400",
+      "center": 0.5
+    },
+    {
+      "target": "deck.1.hotcue0",
+      "kind": "note",
+      "channel": 9,
+      "number": 0,
+      "mode": "absolute",
+      "deviceName": "DDJ-400"
+    },
+    {
+      "target": "deck.1.hotcue1",
+      "kind": "note",
+      "channel": 9,
+      "number": 1,
+      "mode": "absolute",
+      "deviceName": "DDJ-400"
+    },
+    {
+      "target": "deck.1.hotcue2",
+      "kind": "note",
+      "channel": 9,
+      "number": 2,
+      "mode": "absolute",
+      "deviceName": "DDJ-400"
+    },
+    {
+      "target": "deck.1.hotcue3",
+      "kind": "note",
+      "channel": 9,
+      "number": 3,
+      "mode": "absolute",
+      "deviceName": "DDJ-400"
+    },
+    {
+      "target": "deck.1.hotcue4",
+      "kind": "note",
+      "channel": 9,
+      "number": 4,
+      "mode": "absolute",
+      "deviceName": "DDJ-400"
+    },
+    {
+      "target": "deck.1.hotcue5",
+      "kind": "note",
+      "channel": 9,
+      "number": 5,
+      "mode": "absolute",
+      "deviceName": "DDJ-400"
+    },
+    {
+      "target": "deck.1.hotcue6",
+      "kind": "note",
+      "channel": 9,
+      "number": 6,
+      "mode": "absolute",
+      "deviceName": "DDJ-400"
+    },
+    {
+      "target": "deck.1.hotcue7",
+      "kind": "note",
+      "channel": 9,
+      "number": 7,
+      "mode": "absolute",
+      "deviceName": "DDJ-400"
+    },
+    {
+      "target": "mixer.crossfader",
+      "kind": "cc",
+      "channel": 6,
+      "number": 31,
+      "mode": "cc14",
+      "deviceName": "DDJ-400",
+      "center": 0.5
+    },
+    {
+      "target": "mixer.master",
+      "kind": "cc",
+      "channel": 6,
+      "number": 8,
+      "mode": "cc14",
+      "deviceName": "DDJ-400"
+    },
+    {
+      "target": "mixer.cueMix",
+      "kind": "cc",
+      "channel": 6,
+      "number": 12,
+      "mode": "cc14",
+      "deviceName": "DDJ-400"
+    },
+    {
+      "target": "mixer.headphone",
+      "kind": "cc",
+      "channel": 6,
+      "number": 13,
+      "mode": "cc14",
+      "deviceName": "DDJ-400"
+    }
+  ]
+}

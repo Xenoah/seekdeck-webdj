@@ -50,7 +50,8 @@ HTTPSの静的ホストへ配信する場合は、`dist/` の内容を配信ル�
 - 音源・曲情報・クレート・キュー・配置・ミキサー・MIDI/HID割当をIndexedDBに保存
 - 再生位置を5秒ごと＋pagehide時に保存。復元時には自動再生しない
 - セッションと曲情報のJSON入出力（音声は別）、元音源のダウンロード
-- MIDI Learn（Note／CC／Pitch Bend）、14-bit CC、相対3形式、Note LEDフィードバック
+- MIDI Learn（Note／CC／Pitch Bend）、14-bit CC、相対3形式、Note / CC LEDフィードバック、DDJ-400基本プリセット
+- 接続・切断時の保持解除、入力ポートごとの状態分離、JSONの厳密検証。仕様と実機未検証の範囲は[コントローラープロファイル](docs/controller-profiles.md)
 - HID入力レポートの機種別バイトマッピングJSON。ハンドシェイク／専用出力は非対応
 - rekordbox XML / Traktor NML / M3U8 / PLS / CSV / Serato crateのローカル入出力。読み込みプレビューとパス照合
 - WebMCPの状態読取、配置プリセット、停止デッキへの一括ロード（対応ブラウザのみ）
