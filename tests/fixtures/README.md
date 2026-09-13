@@ -15,3 +15,5 @@ Primary implementations consulted:
 The Node crate test constructs its fixture independently with Buffer UTF-16LE byte swapping and big-endian record headers. Browser tests compare explicit expected times before exercising import/export roundtrips.
 
 Passing these tests verifies structural compatibility with these documented implementations; it is not a substitute for testing every release of the commercial applications.
+
+`metadata.mp3.base64` is a two-second excerpt of SeekDeck's own generated demo-0, encoded with FFmpeg/libmp3lame at 64 kbit/s. Its tag payload has an explicit hotcue at 0.5 s and saved loop at 0.75–1.5 s (slot 4), 128 BPM and a 0.125 s grid anchor. It is text-encoded for reviewable Git transport and decoded by the browser test. The binary codec tests independently construct their marker payloads with Node Buffer; the MP3 fixture exercises actual browser decoding/import/download.
