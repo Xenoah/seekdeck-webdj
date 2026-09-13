@@ -1,0 +1,41 @@
+name: Sample catalog
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'dist/samples/audio/**'
+      - tools/index-samples.mjs
+      - tools/publish-sample-catalog.mjs
+      - .github/workflows/samples.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: seekdeck-sample-catalog
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.repository == 'Xenoah/seekdeck-webdj' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pages: write
+      actions: write
+    steps:
+      - name: Check out latest main
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Build sample catalog
+        run: node tools/index-samples.mjs
+      - name: Commit catalog and request the existing Pages deployment
+        id: publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node tools/publish-sample-catalog.mjs

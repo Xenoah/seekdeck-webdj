@@ -1,3 +1,4 @@
+import {fetchSampleAudio} from './sample-library.js';
 import {escapeHTML as esc} from './core.js';
 import {getAudio,downloadBlob} from './storage.js';
 import {listRecordings,getRecording,getRecordingBlob,writeRecording,deleteRecording,recordingFilename} from './recording.js';
@@ -30,7 +31,7 @@ export function attachBackupUI(a){
     if(busy)throw new Error('現在の保存処理が終わるまでお待ちください。');
     busy=true;cancellable=cancel;controller=new AbortController();updateButtons();
     const error=document.querySelector('#backup-error');if(error)error.textContent='';
-    try{return await run(controller.signal);}finally{busy=false;cancellable=false;controller=null;updateButtons();}
+    try{return await run(controller.signal);}finally{busy=false;cancellable=false;controller=null;updateButtons();a.resumeSampleRefresh?.();}
   }
   async function pickWriter(name,type){
     if(typeof globalThis.showSaveFilePicker!=='function')return null;
@@ -66,7 +67,7 @@ export function attachBackupUI(a){
     await work(async()=>{await deleteRecording(id);await showRecordings();a.toast('録音を削除しました。');},{cancel:false});
   }
   async function resolveAudio(track){
-    const blob=await getAudio(track.id);if(blob)return blob;
+    const blob=await getAudio(track.id);if(blob)return blob;if(track.bundled)return fetchSampleAudio(track,{signal:controller?.signal});
     if(!track.demo||typeof track.source!=='string')return undefined;
     const url=new URL(track.source,import.meta.url),base=new URL('./',import.meta.url);
     if(url.origin!==base.origin||!url.pathname.startsWith(base.pathname)||!['http:','https:'].includes(url.protocol))throw new Error(`音源の場所を確認してください：${track.name}`);
@@ -77,7 +78,7 @@ export function attachBackupUI(a){
     if(a.importing)throw new Error('音源の読み込みが終わるまでお待ちください。');
     const name=`SeekDeck-Backup-${new Date().toISOString().slice(0,10)}.seekdeck`,snapshot=a.snapshot(),tracks=structuredClone([...a.tracks.values()]);
     const writerPromise=pickWriter(name,'application/x-seekdeck-backup');
-    a.modal('音源付きバックアップ',`<p>元の音源と設定を 1 ファイルにまとめます。</p>${progressMarkup()}<button class="button" data-backup-action="cancel-work">中止</button>`);
+    a.modal('音源付きバックアップ',`<p>元の音源と設定を 1 ファイルにまとめます。未ロードの公開サンプルは同じサイトから取得して含めます。</p>${progressMarkup()}<button class="button" data-backup-action="cancel-work">中止</button>`);
     await work(async signal=>{
       progress('保存先を確認しています…');const writable=await writerPromise;
       const output=await exportBackup({tracks,session:snapshot,resolveAudio,writable,signal,onProgress});
