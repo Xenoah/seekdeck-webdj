@@ -1,9 +1,10 @@
+import {attachGestures} from './gestures.js';
 import {isMobileScreen} from './mobile.js';
 import {clamp,quantize,validTarget} from './core.js';
 import {wavesMarkup} from './ui.js';
 import * as dialogs from './dialogs.js';
 import {handleExchangeAction,previewExchange,FORMATS} from './exchange.js';
-export function attachEvents(a){const $=q=>document.querySelector(q),$$=q=>Array.from(document.querySelectorAll(q));let nudge=null,jog=null,roll=null,scratchStop=null;const knobDrags=new Map();
+export function attachEvents(a){const $=q=>document.querySelector(q),$$=q=>Array.from(document.querySelectorAll(q));a.gestures=attachGestures(a);
  const fail=e=>a.toast(e.message||String(e),true);
  document.addEventListener('click',async e=>{const el=e.target.closest('button,[data-track]');if(!el)return;try{
  if(el.dataset.mobileSurface){const i=Number(el.dataset.deck);a.s.mobile.surfaces[i]=el.dataset.mobileSurface;document.body.dataset.cueDelete='false';a.renderDeck(i);a.save();return;}
@@ -22,16 +23,6 @@ export function attachEvents(a){const $=q=>document.querySelector(q),$$=q=>Array
  document.addEventListener('input',onInput);document.addEventListener('change',e=>{if(e.target.tagName==='SELECT')onInput(e);});
  document.addEventListener('dblclick',e=>{const tr=e.target.closest('[data-track]');if(tr&&!e.target.closest('button'))a.loadDeck(isMobileScreen()?a.s.mobile.deck:a.s.selectedDeck,tr.dataset.track).catch(fail);const knob=e.target.closest('.knob');if(knob){const input=knob.querySelector('input');a.replaceValue(Number(input.dataset.deck),input.dataset.param,0);a.updateParamUI(Number(input.dataset.deck),input.dataset.param,0);}});
  document.addEventListener('contextmenu',e=>{const pad=e.target.closest('[data-pad]'),sam=e.target.closest('[data-sample]');if(pad){e.preventDefault();a.hotcue(Number(pad.dataset.deck),Number(pad.dataset.pad),true).catch(fail);}if(sam){e.preventDefault();dialogs.showSampleEditor(a,Number(sam.dataset.sample));}});
- document.addEventListener('pointerdown',e=>{if(a.layout.editing||a.controllers.learning||e.button!==0)return;const knob=e.target.closest('.knob'),wheel=e.target.closest('[data-jog]'),over=e.target.closest('[data-overview]'),nud=e.target.closest('[data-nudge]'),pad=e.target.closest('[data-pad]');
- if(knob){const input=knob.querySelector('input[type=range]');if(input){e.preventDefault();input.setPointerCapture(e.pointerId);knobDrags.set(e.pointerId,{input,i:Number(input.dataset.deck),key:input.dataset.param,x:e.clientX,y:e.clientY,value:Number(input.value),min:Number(input.min),max:Number(input.max)});}}
- if(over){const i=Number(over.dataset.overview),r=over.getBoundingClientRect();a.seekDeck(i,(e.clientX-r.left)/r.width*(a.getTrack(i)?.duration||0));}
- if(wheel){const i=Number(wheel.dataset.jog);if(!a.engine.has(a.s.decks[i].trackId)){a.toast('一度再生するとジョグを使えます。');return;}e.preventDefault();wheel.setPointerCapture(e.pointerId);jog={i,id:e.pointerId,x:e.clientX,t:e.timeStamp};a.engine.scratch(i,true,0);}
- if(nud){const i=Number(nud.dataset.deck);e.preventDefault();nud.setPointerCapture(e.pointerId);nudge={i,id:e.pointerId};a.engine.applyDeck(i,{...a.s.decks[i],rate:a.s.decks[i].rate*(1+Number(nud.dataset.nudge)*.035)},a.getTrack(i)?.bpm);}
- if(pad&&a.s.decks[Number(pad.dataset.deck)].padMode==='roll'){const i=Number(pad.dataset.deck),t=a.getTrack(i);if(!t||!a.s.decks[i].playing)return;const beats=[.125,.25,.5,1,2,4,8,16][Number(pad.dataset.pad)],start=quantize(a.position(i),t.bpm,t.gridOffset);e.preventDefault();pad.setPointerCapture(e.pointerId);pad.classList.add('pressed');roll={i,id:e.pointerId,el:pad};a.engine.roll(i,true,start,Math.min(t.duration,start+beats*60/t.bpm));}
- });
- document.addEventListener('pointermove',e=>{const k=knobDrags.get(e.pointerId);if(k){e.preventDefault();const value=clamp(k.value+((e.clientX-k.x)-(e.clientY-k.y))*(k.max-k.min)/120,k.min,k.max);a.replaceValue(k.i,k.key,value);k.input.value=value;a.updateParamUI(k.i,k.key,value);}if(jog&&e.pointerId===jog.id){const dt=Math.max(1,e.timeStamp-jog.t),speed=clamp((e.clientX-jog.x)/dt*3,-8,8);jog.x=e.clientX;jog.t=e.timeStamp;a.engine.scratch(jog.i,true,speed);clearTimeout(scratchStop);scratchStop=setTimeout(()=>{if(jog)a.engine.scratch(jog.i,true,0);},80);}});
- function release(e){if(e)knobDrags.delete(e.pointerId);else knobDrags.clear();if(jog&&(!e||jog.id===e.pointerId)){clearTimeout(scratchStop);a.engine.scratch(jog.i,false);jog=null;a.save();}if(nudge&&(!e||nudge.id===e.pointerId)){a.engine.applyDeck(nudge.i,a.s.decks[nudge.i],a.getTrack(nudge.i)?.bpm);nudge=null;}if(roll&&(!e||roll.id===e.pointerId)){a.engine.roll(roll.i,false);roll.el.classList.remove('pressed');roll=null;a.save();}}
- document.addEventListener('pointerup',release);document.addEventListener('pointercancel',release);document.addEventListener('lostpointercapture',release);window.addEventListener('resize',()=>release());window.addEventListener('blur',()=>release());
  document.addEventListener('dragstart',e=>{const tr=e.target.closest('[data-track]');if(!tr)return;e.dataTransfer.setData('application/x-orbit-track',tr.dataset.track);e.dataTransfer.effectAllowed='copy';});
  document.addEventListener('dragover',e=>{if(!Array.from(e.dataTransfer.types).some(t=>t==='Files'||t==='application/x-orbit-track'))return;e.preventDefault();const target=e.target.closest('[data-panel^=deck],[data-sample]');$$('.drop-target').forEach(x=>{if(x!==target)x.classList.remove('drop-target');});target?.classList.add('drop-target');});
  document.addEventListener('dragleave',e=>{if(!e.relatedTarget)$$('.drop-target').forEach(x=>x.classList.remove('drop-target'));});
