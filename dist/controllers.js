@@ -1,5 +1,6 @@
 import {validTarget,clamp} from './core.js';
 import {validMIDIMapping,validHIDMapping,validateControllerProfile,MAX_MAPPINGS} from './controller-profiles.js';
+import {DDJFLX4_PROFILE,isDDJFLX4,flx4MessageMapping} from './ddj-flx4-profile.js';
 
 export function decodeMIDI(data){
  if(!data||data.length!==3||!Number.isInteger(data[0])||data[0]<128||data[0]>239||![data[1],data[2]].every(v=>Number.isInteger(v)&&v>=0&&v<=127))return null;
@@ -14,6 +15,8 @@ const deviceName=input=>`${input.manufacturer||''}::${input.name||input.id}`;
 const portKey=input=>`midi:${input.id||deviceName(input)}`;
 function matches(map,input){return (!map.inputId||map.inputId===input.id)&&(!map.device||map.device===deviceName(input))&&(!map.deviceName||map.deviceName.toLowerCase()===(input.name||'').toLowerCase());}
 const isHold=target=>target.endsWith('.scratch');
+const jogMeta=map=>({...(map.jogMode!==undefined?{jogMode:map.jogMode}:{}),...(map.sensitivity!==undefined?{sensitivity:map.sensitivity}:{})});
+const targetCenter=target=>({rate:.5,gain:2/3,high:5/7,mid:5/7,low:5/7,filter:.5,crossfader:.5})[target.split('.').at(-1)];
 
 export class Controllers extends EventTarget{
  constructor(getSession,dispatch){
@@ -64,38 +67,71 @@ export class Controllers extends EventTarget{
   for(const target of holds)if(!this.heldElsewhere(target))this.dispatch(target,0,{relative:false,pressed:false,released:true,disconnected:true});
  }
  heldElsewhere(target){for(const actions of this.lastActions.values())for(const [m,value]of actions)if(m.target===target&&value>0)return true;return false;}
- absolute(key,map,value){
+ absolute(key,map,value,flx4Touch=false){
   let actions=this.lastActions.get(key);if(!actions)this.lastActions.set(key,actions=new Map());
-  const v=map.invert?1-value:value,previous=actions.get(map)||0;actions.set(map,v);
+  const v=map.invert?1-value:value;let previous=actions.get(map)||0;
+  // Normal/SHIFT touch notes describe one physical capacitive sensor. A release
+  // under a changed SHIFT state must also release its preceding note number.
+  if(flx4Touch)for(const [other,held]of actions)if(other.target===map.target&&other.kind==='note'&&other.channel===map.channel&&[54,103].includes(other.number)){previous=Math.max(previous,held);actions.set(other,0);}
+  actions.set(map,v);
   if(isHold(map.target)&&v===0&&this.heldElsewhere(map.target))return;
   this.dispatch(map.target,v,{relative:false,pressed:v>0&&previous===0,released:v===0&&previous>0});
+ }
+ learnMIDI(input,m){
+  const target=this.target,flx4=isDDJFLX4(input),known=flx4?flx4MessageMapping(m):null;
+  // A platter touch arrives before rotation. Do not learn it as an absolute jog.
+  if(m.kind==='note'&&m.value===0||target.endsWith('.jog')&&(m.kind!=='cc'||flx4&&known?.target.split('.').at(-1)!=='jog'))return false;
+  if(flx4&&target.endsWith('.scratch')&&known?.target.split('.').at(-1)!=='scratch')return false;
+  if(known?.mode.startsWith('relative')&&!relative(m.value,known.mode))return false;
+  const binding={device:deviceName(input),inputId:input.id,invert:false},s=this.getSession();
+  let learned;
+  if(flx4&&(target.endsWith('.jog')||target.endsWith('.scratch'))){
+   // Preserve all physical wheel surfaces when re-learning a deck. Otherwise
+   // touching the top to learn it silently removes the separate side-wheel CC.
+   const deck=target.slice(0,target.lastIndexOf('.')),sourceDeck=known.target.slice(0,known.target.lastIndexOf('.'));
+   learned=DDJFLX4_PROFILE.midiMappings.filter(x=>x.target===known.target||target.endsWith('.jog')&&x.target===`${sourceDeck}.scratch`).map(x=>{
+    const {deviceName,...map}=x;return {...map,target:`${deck}.${x.target.split('.').at(-1)}`,...binding};
+   });
+  }else{
+   const mode=known?.mode??(target.endsWith('.jog')?'relative-twos':'absolute');
+   const center=mode==='cc14'?targetCenter(target):undefined;
+   learned=[{target,kind:m.kind,channel:m.channel,number:known?.mode==='cc14'?known.number:m.number,mode,...binding,...(center===undefined?{}:{center}),...(target.endsWith('.scratch')?{feedback:false}:{})}];
+  }
+  const targets=new Set(learned.map(x=>x.target)),remaining=(s.midiMappings||[]).filter(x=>!targets.has(x.target));
+  if(remaining.length+learned.length>MAX_MAPPINGS){this.last='割り当ては1000件以下にしてください。';this.emit('input',this.last);return false;}
+  s.midiMappings=[...remaining,...learned];this.target=null;this.resetInputState();this.emit('mapped',target);return true;
  }
  receive(input,data){
   if(input.state==='disconnected')return;
   const m=decodeMIDI(data);if(!m)return;
-  const device=deviceName(input),key=portKey(input);
+  const key=portKey(input),flx4=isDDJFLX4(input);
   this.last=`${input.name||'MIDI'} · CH ${m.channel+1} · ${m.kind.toUpperCase()} ${m.number} = ${m.value}`;this.emit('input',this.last);
-  if(this.learning&&this.target&&m.value>0){
-   const s=this.getSession();s.midiMappings=s.midiMappings.filter(x=>x.target!==this.target);
-   s.midiMappings.push({target:this.target,device,inputId:input.id,kind:m.kind,channel:m.channel,number:m.number,mode:this.target.endsWith('.jog')?'relative-twos':'absolute',invert:false});
-   const target=this.target;this.target=null;this.resetInputState();this.emit('mapped',target);return;
-  }
+  if(this.learning&&this.target&&this.learnMIDI(input,m))return;
   let cache=this.ccCache.get(key);if(!cache)this.ccCache.set(key,cache=new Map());
   if(m.kind==='cc')cache.set(`${m.channel}:${m.number}`,m.value);
+  const pairs=new Map();
   for(const map of (this.getSession().midiMappings||[]).slice(0,MAX_MAPPINGS)){
    if(!validMIDIMapping(map)||!matches(map,input)||map.channel!==m.channel||map.kind!==m.kind)continue;
    let val=m.value,max=m.max;
    if(map.mode==='cc14'){
     if(m.number!==map.number&&m.number!==map.number+32)continue;
-    const msb=cache.get(`${m.channel}:${map.number}`),lsb=cache.get(`${m.channel}:${map.number+32}`);
-    if(msb===undefined||lsb===undefined)continue;
-    val=msb*128+lsb;max=16383;
+    const msbKey=`${m.channel}:${map.number}`,lsbKey=`${m.channel}:${map.number+32}`;
+    if(!pairs.has(msbKey)){
+     const msb=cache.get(msbKey),lsb=cache.get(lsbKey);
+     if(msb===undefined||lsb===undefined)continue;
+     pairs.set(msbKey,msb*128+lsb);
+     // FLX4 transmits complete pairs on every movement. Consuming both avoids
+     // a transient jump from a new MSB combined with the preceding LSB. Generic
+     // devices may send only the changed byte, so retain their cached partner.
+     if(flx4){cache.delete(msbKey);cache.delete(lsbKey);}
+    }
+    val=pairs.get(msbKey);max=16383;
    }else if(map.number!==m.number)continue;
-   if(map.mode?.startsWith('relative')){const delta=relative(val,map.mode);if(delta)this.dispatch(map.target,delta*(map.invert?-1:1),{relative:true,pressed:true});}
+   if(map.mode?.startsWith('relative')){const delta=relative(val,map.mode);if(delta)this.dispatch(map.target,delta*(map.invert?-1:1),{relative:true,pressed:true,...jogMeta(map)});}
    else{
     let v=clamp(val/max,0,1);
     if(map.center!==undefined){const middle=Math.ceil(max/2)/max;v=v<=middle?v/middle*map.center:map.center+(v-middle)/(1-middle)*(1-map.center);}
-    this.absolute(key,map,v);
+    this.absolute(key,map,v,flx4&&isHold(map.target)&&map.kind==='note'&&[54,103].includes(map.number));
    }
   }
  }

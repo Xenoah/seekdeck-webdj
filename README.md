@@ -21,6 +21,12 @@ Pagesは次の両方式に対応しています。設定は [Settings → Pages]
 
 初回有効化には管理権限が必要です（[GitHub公式の権限要件](https://github.com/actions/configure-pages/blob/main/action.yml)）。オリジンごとに音源と設定の保存領域は分かれます。
 
+## DDJ-FLX4（v0.9.0）
+
+新規セッションとMIDI設定の既定プリセットは **DDJ-FLX4** です。既存の手動割当は保持するため、更新前から使っている場合は **MIDI → DDJ-FLX4 → 既存MIDI割当を置き換えて適用** を一度実行してください。OS上の名前が異なる場合は接続ポートを指定します。
+
+上面タッチはスクラッチ、側面はテンポの微調整、SHIFT＋上面回転は素早い曲内移動です。メーカーのMIDI仕様に合わせてジョグの相対値と14-bitフェーダーを修正しました。PLAY/CUE/SYNC、EQ、フィルター、選曲・LOAD、ループ、HOT CUEとSHIFT削除、BEAT JUMP / BEAT LOOP / SAMPLER、SeekDeckの3種類のFXを割り当てています。[全マッピングと検証範囲](docs/controller-profiles.md) · [プリセットJSON](dist/controller-profiles/ddj-flx4.json)。実機での接続・操作は未検証です。
+
 ## 起動方法
 
 配布ZIPを展開するか、このリポジトリを取得します。Python 3がある環境では、プロジェクトのフォルダーで次を実行してください。追加パッケージは不要です。
@@ -50,7 +56,7 @@ HTTPSの静的ホストへ配信する場合は、`dist/` の内容を配信ル�
 - 音源・曲情報・クレート・キュー・配置・ミキサー・MIDI/HID割当をIndexedDBに保存
 - 再生位置を5秒ごと＋pagehide時に保存。復元時には自動再生しない
 - セッションと曲情報のJSON入出力（音声は別）、音源付き `.seekdeck` バックアップ、元音源のダウンロード
-- MIDI Learn（Note／CC／Pitch Bend）、14-bit CC、相対3形式、Note / CC LEDフィードバック、DDJ-400基本プリセット
+- MIDI Learn（Note／CC／Pitch Bend）、14-bit CC、相対3形式、Note / CC LEDフィードバック、DDJ-FLX4既定プリセット（147割当）／DDJ-400基本プリセット
 - 接続・切断時の保持解除、入力ポートごとの状態分離、JSONの厳密検証。仕様と実機未検証の範囲は[コントローラープロファイル](docs/controller-profiles.md)
 - HID入力レポートの機種別バイトマッピングJSON。ハンドシェイク／専用出力は非対応
 - rekordbox XML / Traktor NML / M3U8 / PLS / CSV / Serato crateのローカル入出力。読み込みプレビューとパス照合

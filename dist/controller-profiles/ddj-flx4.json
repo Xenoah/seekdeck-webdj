@@ -1,0 +1,1292 @@
+{
+  "format": "seekdeck-controller",
+  "version": 1,
+  "name": "Pioneer DJ DDJ-FLX4",
+  "midiMappings": [
+    {
+      "target": "deck.0.play",
+      "kind": "note",
+      "channel": 0,
+      "number": 11,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "deck.0.cue",
+      "kind": "note",
+      "channel": 0,
+      "number": 12,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "deck.0.sync",
+      "kind": "note",
+      "channel": 0,
+      "number": 88,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "deck.0.master",
+      "kind": "note",
+      "channel": 0,
+      "number": 96,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "deck.0.cueOn",
+      "kind": "note",
+      "channel": 0,
+      "number": 84,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "deck.0.loopIn",
+      "kind": "note",
+      "channel": 0,
+      "number": 16,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "deck.0.loopOut",
+      "kind": "note",
+      "channel": 0,
+      "number": 17,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "deck.0.loop4",
+      "kind": "note",
+      "channel": 0,
+      "number": 77,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.0.reloop",
+      "kind": "note",
+      "channel": 0,
+      "number": 80,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.0.loopHalf",
+      "kind": "note",
+      "channel": 0,
+      "number": 81,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.0.loopDouble",
+      "kind": "note",
+      "channel": 0,
+      "number": 83,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.0.scratch",
+      "kind": "note",
+      "channel": 0,
+      "number": 54,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.0.scratch",
+      "kind": "note",
+      "channel": 0,
+      "number": 103,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.0.jog",
+      "kind": "cc",
+      "channel": 0,
+      "number": 34,
+      "mode": "relative-offset",
+      "deviceName": "DDJ-FLX4",
+      "jogMode": "touch"
+    },
+    {
+      "target": "deck.0.jog",
+      "kind": "cc",
+      "channel": 0,
+      "number": 33,
+      "mode": "relative-offset",
+      "deviceName": "DDJ-FLX4",
+      "jogMode": "bend"
+    },
+    {
+      "target": "deck.0.jog",
+      "kind": "cc",
+      "channel": 0,
+      "number": 35,
+      "mode": "relative-offset",
+      "deviceName": "DDJ-FLX4",
+      "jogMode": "vinyl-off"
+    },
+    {
+      "target": "deck.0.jog",
+      "kind": "cc",
+      "channel": 0,
+      "number": 41,
+      "mode": "relative-offset",
+      "deviceName": "DDJ-FLX4",
+      "jogMode": "seek"
+    },
+    {
+      "target": "deck.0.rate",
+      "kind": "cc",
+      "channel": 0,
+      "number": 0,
+      "mode": "cc14",
+      "deviceName": "DDJ-FLX4",
+      "center": 0.5
+    },
+    {
+      "target": "deck.0.volume",
+      "kind": "cc",
+      "channel": 0,
+      "number": 19,
+      "mode": "cc14",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "deck.0.gain",
+      "kind": "cc",
+      "channel": 0,
+      "number": 4,
+      "mode": "cc14",
+      "deviceName": "DDJ-FLX4",
+      "center": 0.6666666666666666
+    },
+    {
+      "target": "deck.0.high",
+      "kind": "cc",
+      "channel": 0,
+      "number": 7,
+      "mode": "cc14",
+      "deviceName": "DDJ-FLX4",
+      "center": 0.7142857142857143
+    },
+    {
+      "target": "deck.0.mid",
+      "kind": "cc",
+      "channel": 0,
+      "number": 11,
+      "mode": "cc14",
+      "deviceName": "DDJ-FLX4",
+      "center": 0.7142857142857143
+    },
+    {
+      "target": "deck.0.low",
+      "kind": "cc",
+      "channel": 0,
+      "number": 15,
+      "mode": "cc14",
+      "deviceName": "DDJ-FLX4",
+      "center": 0.7142857142857143
+    },
+    {
+      "target": "deck.0.filter",
+      "kind": "cc",
+      "channel": 6,
+      "number": 23,
+      "mode": "cc14",
+      "deviceName": "DDJ-FLX4",
+      "center": 0.5
+    },
+    {
+      "target": "deck.0.load",
+      "kind": "note",
+      "channel": 6,
+      "number": 70,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.0.hotcue0",
+      "kind": "note",
+      "channel": 7,
+      "number": 0,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "deck.0.hotcueDelete0",
+      "kind": "note",
+      "channel": 8,
+      "number": 0,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.0.beatjump0",
+      "kind": "note",
+      "channel": 7,
+      "number": 32,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.0.beatloop0",
+      "kind": "note",
+      "channel": 7,
+      "number": 96,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "sampler.0",
+      "kind": "note",
+      "channel": 7,
+      "number": 48,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.0.hotcue1",
+      "kind": "note",
+      "channel": 7,
+      "number": 1,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "deck.0.hotcueDelete1",
+      "kind": "note",
+      "channel": 8,
+      "number": 1,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.0.beatjump1",
+      "kind": "note",
+      "channel": 7,
+      "number": 33,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.0.beatloop1",
+      "kind": "note",
+      "channel": 7,
+      "number": 97,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "sampler.1",
+      "kind": "note",
+      "channel": 7,
+      "number": 49,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.0.hotcue2",
+      "kind": "note",
+      "channel": 7,
+      "number": 2,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "deck.0.hotcueDelete2",
+      "kind": "note",
+      "channel": 8,
+      "number": 2,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.0.beatjump2",
+      "kind": "note",
+      "channel": 7,
+      "number": 34,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.0.beatloop2",
+      "kind": "note",
+      "channel": 7,
+      "number": 98,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "sampler.2",
+      "kind": "note",
+      "channel": 7,
+      "number": 50,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.0.hotcue3",
+      "kind": "note",
+      "channel": 7,
+      "number": 3,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "deck.0.hotcueDelete3",
+      "kind": "note",
+      "channel": 8,
+      "number": 3,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.0.beatjump3",
+      "kind": "note",
+      "channel": 7,
+      "number": 35,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.0.beatloop3",
+      "kind": "note",
+      "channel": 7,
+      "number": 99,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "sampler.3",
+      "kind": "note",
+      "channel": 7,
+      "number": 51,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.0.hotcue4",
+      "kind": "note",
+      "channel": 7,
+      "number": 4,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "deck.0.hotcueDelete4",
+      "kind": "note",
+      "channel": 8,
+      "number": 4,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.0.beatjump4",
+      "kind": "note",
+      "channel": 7,
+      "number": 36,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.0.beatloop4",
+      "kind": "note",
+      "channel": 7,
+      "number": 100,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "sampler.4",
+      "kind": "note",
+      "channel": 7,
+      "number": 52,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.0.hotcue5",
+      "kind": "note",
+      "channel": 7,
+      "number": 5,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "deck.0.hotcueDelete5",
+      "kind": "note",
+      "channel": 8,
+      "number": 5,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.0.beatjump5",
+      "kind": "note",
+      "channel": 7,
+      "number": 37,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.0.beatloop5",
+      "kind": "note",
+      "channel": 7,
+      "number": 101,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "sampler.5",
+      "kind": "note",
+      "channel": 7,
+      "number": 53,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.0.hotcue6",
+      "kind": "note",
+      "channel": 7,
+      "number": 6,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "deck.0.hotcueDelete6",
+      "kind": "note",
+      "channel": 8,
+      "number": 6,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.0.beatjump6",
+      "kind": "note",
+      "channel": 7,
+      "number": 38,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.0.beatloop6",
+      "kind": "note",
+      "channel": 7,
+      "number": 102,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "sampler.6",
+      "kind": "note",
+      "channel": 7,
+      "number": 54,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.0.hotcue7",
+      "kind": "note",
+      "channel": 7,
+      "number": 7,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "deck.0.hotcueDelete7",
+      "kind": "note",
+      "channel": 8,
+      "number": 7,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.0.beatjump7",
+      "kind": "note",
+      "channel": 7,
+      "number": 39,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.0.beatloop7",
+      "kind": "note",
+      "channel": 7,
+      "number": 103,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "sampler.7",
+      "kind": "note",
+      "channel": 7,
+      "number": 55,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.1.play",
+      "kind": "note",
+      "channel": 1,
+      "number": 11,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "deck.1.cue",
+      "kind": "note",
+      "channel": 1,
+      "number": 12,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "deck.1.sync",
+      "kind": "note",
+      "channel": 1,
+      "number": 88,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "deck.1.master",
+      "kind": "note",
+      "channel": 1,
+      "number": 96,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "deck.1.cueOn",
+      "kind": "note",
+      "channel": 1,
+      "number": 84,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "deck.1.loopIn",
+      "kind": "note",
+      "channel": 1,
+      "number": 16,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "deck.1.loopOut",
+      "kind": "note",
+      "channel": 1,
+      "number": 17,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "deck.1.loop4",
+      "kind": "note",
+      "channel": 1,
+      "number": 77,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.1.reloop",
+      "kind": "note",
+      "channel": 1,
+      "number": 80,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.1.loopHalf",
+      "kind": "note",
+      "channel": 1,
+      "number": 81,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.1.loopDouble",
+      "kind": "note",
+      "channel": 1,
+      "number": 83,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.1.scratch",
+      "kind": "note",
+      "channel": 1,
+      "number": 54,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.1.scratch",
+      "kind": "note",
+      "channel": 1,
+      "number": 103,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.1.jog",
+      "kind": "cc",
+      "channel": 1,
+      "number": 34,
+      "mode": "relative-offset",
+      "deviceName": "DDJ-FLX4",
+      "jogMode": "touch"
+    },
+    {
+      "target": "deck.1.jog",
+      "kind": "cc",
+      "channel": 1,
+      "number": 33,
+      "mode": "relative-offset",
+      "deviceName": "DDJ-FLX4",
+      "jogMode": "bend"
+    },
+    {
+      "target": "deck.1.jog",
+      "kind": "cc",
+      "channel": 1,
+      "number": 35,
+      "mode": "relative-offset",
+      "deviceName": "DDJ-FLX4",
+      "jogMode": "vinyl-off"
+    },
+    {
+      "target": "deck.1.jog",
+      "kind": "cc",
+      "channel": 1,
+      "number": 41,
+      "mode": "relative-offset",
+      "deviceName": "DDJ-FLX4",
+      "jogMode": "seek"
+    },
+    {
+      "target": "deck.1.rate",
+      "kind": "cc",
+      "channel": 1,
+      "number": 0,
+      "mode": "cc14",
+      "deviceName": "DDJ-FLX4",
+      "center": 0.5
+    },
+    {
+      "target": "deck.1.volume",
+      "kind": "cc",
+      "channel": 1,
+      "number": 19,
+      "mode": "cc14",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "deck.1.gain",
+      "kind": "cc",
+      "channel": 1,
+      "number": 4,
+      "mode": "cc14",
+      "deviceName": "DDJ-FLX4",
+      "center": 0.6666666666666666
+    },
+    {
+      "target": "deck.1.high",
+      "kind": "cc",
+      "channel": 1,
+      "number": 7,
+      "mode": "cc14",
+      "deviceName": "DDJ-FLX4",
+      "center": 0.7142857142857143
+    },
+    {
+      "target": "deck.1.mid",
+      "kind": "cc",
+      "channel": 1,
+      "number": 11,
+      "mode": "cc14",
+      "deviceName": "DDJ-FLX4",
+      "center": 0.7142857142857143
+    },
+    {
+      "target": "deck.1.low",
+      "kind": "cc",
+      "channel": 1,
+      "number": 15,
+      "mode": "cc14",
+      "deviceName": "DDJ-FLX4",
+      "center": 0.7142857142857143
+    },
+    {
+      "target": "deck.1.filter",
+      "kind": "cc",
+      "channel": 6,
+      "number": 24,
+      "mode": "cc14",
+      "deviceName": "DDJ-FLX4",
+      "center": 0.5
+    },
+    {
+      "target": "deck.1.load",
+      "kind": "note",
+      "channel": 6,
+      "number": 71,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.1.hotcue0",
+      "kind": "note",
+      "channel": 9,
+      "number": 0,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "deck.1.hotcueDelete0",
+      "kind": "note",
+      "channel": 10,
+      "number": 0,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.1.beatjump0",
+      "kind": "note",
+      "channel": 9,
+      "number": 32,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.1.beatloop0",
+      "kind": "note",
+      "channel": 9,
+      "number": 96,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "sampler.0",
+      "kind": "note",
+      "channel": 9,
+      "number": 48,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.1.hotcue1",
+      "kind": "note",
+      "channel": 9,
+      "number": 1,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "deck.1.hotcueDelete1",
+      "kind": "note",
+      "channel": 10,
+      "number": 1,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.1.beatjump1",
+      "kind": "note",
+      "channel": 9,
+      "number": 33,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.1.beatloop1",
+      "kind": "note",
+      "channel": 9,
+      "number": 97,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "sampler.1",
+      "kind": "note",
+      "channel": 9,
+      "number": 49,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.1.hotcue2",
+      "kind": "note",
+      "channel": 9,
+      "number": 2,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "deck.1.hotcueDelete2",
+      "kind": "note",
+      "channel": 10,
+      "number": 2,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.1.beatjump2",
+      "kind": "note",
+      "channel": 9,
+      "number": 34,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.1.beatloop2",
+      "kind": "note",
+      "channel": 9,
+      "number": 98,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "sampler.2",
+      "kind": "note",
+      "channel": 9,
+      "number": 50,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.1.hotcue3",
+      "kind": "note",
+      "channel": 9,
+      "number": 3,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "deck.1.hotcueDelete3",
+      "kind": "note",
+      "channel": 10,
+      "number": 3,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.1.beatjump3",
+      "kind": "note",
+      "channel": 9,
+      "number": 35,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.1.beatloop3",
+      "kind": "note",
+      "channel": 9,
+      "number": 99,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "sampler.3",
+      "kind": "note",
+      "channel": 9,
+      "number": 51,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.1.hotcue4",
+      "kind": "note",
+      "channel": 9,
+      "number": 4,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "deck.1.hotcueDelete4",
+      "kind": "note",
+      "channel": 10,
+      "number": 4,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.1.beatjump4",
+      "kind": "note",
+      "channel": 9,
+      "number": 36,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.1.beatloop4",
+      "kind": "note",
+      "channel": 9,
+      "number": 100,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "sampler.4",
+      "kind": "note",
+      "channel": 9,
+      "number": 52,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.1.hotcue5",
+      "kind": "note",
+      "channel": 9,
+      "number": 5,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "deck.1.hotcueDelete5",
+      "kind": "note",
+      "channel": 10,
+      "number": 5,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.1.beatjump5",
+      "kind": "note",
+      "channel": 9,
+      "number": 37,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.1.beatloop5",
+      "kind": "note",
+      "channel": 9,
+      "number": 101,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "sampler.5",
+      "kind": "note",
+      "channel": 9,
+      "number": 53,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.1.hotcue6",
+      "kind": "note",
+      "channel": 9,
+      "number": 6,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "deck.1.hotcueDelete6",
+      "kind": "note",
+      "channel": 10,
+      "number": 6,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.1.beatjump6",
+      "kind": "note",
+      "channel": 9,
+      "number": 38,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.1.beatloop6",
+      "kind": "note",
+      "channel": 9,
+      "number": 102,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "sampler.6",
+      "kind": "note",
+      "channel": 9,
+      "number": 54,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.1.hotcue7",
+      "kind": "note",
+      "channel": 9,
+      "number": 7,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "deck.1.hotcueDelete7",
+      "kind": "note",
+      "channel": 10,
+      "number": 7,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.1.beatjump7",
+      "kind": "note",
+      "channel": 9,
+      "number": 39,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "deck.1.beatloop7",
+      "kind": "note",
+      "channel": 9,
+      "number": 103,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "sampler.7",
+      "kind": "note",
+      "channel": 9,
+      "number": 55,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "mixer.crossfader",
+      "kind": "cc",
+      "channel": 6,
+      "number": 31,
+      "mode": "cc14",
+      "deviceName": "DDJ-FLX4",
+      "center": 0.5
+    },
+    {
+      "target": "mixer.master",
+      "kind": "cc",
+      "channel": 6,
+      "number": 8,
+      "mode": "cc14",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "mixer.cueMix",
+      "kind": "cc",
+      "channel": 6,
+      "number": 12,
+      "mode": "cc14",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "mixer.headphone",
+      "kind": "cc",
+      "channel": 6,
+      "number": 13,
+      "mode": "cc14",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "library.browse",
+      "kind": "cc",
+      "channel": 6,
+      "number": 64,
+      "mode": "relative-twos",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "library.browse",
+      "kind": "cc",
+      "channel": 6,
+      "number": 100,
+      "mode": "relative-twos",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "library.focus",
+      "kind": "note",
+      "channel": 6,
+      "number": 65,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "library.focus",
+      "kind": "note",
+      "channel": 6,
+      "number": 66,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "fx.assign0",
+      "kind": "note",
+      "channel": 4,
+      "number": 16,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "fx.assign1",
+      "kind": "note",
+      "channel": 5,
+      "number": 17,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "fx.next",
+      "kind": "note",
+      "channel": 4,
+      "number": 99,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "fx.previous",
+      "kind": "note",
+      "channel": 4,
+      "number": 100,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "fx.beatsHalf",
+      "kind": "note",
+      "channel": 4,
+      "number": 74,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "fx.beatsDouble",
+      "kind": "note",
+      "channel": 4,
+      "number": 75,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "fx.mix",
+      "kind": "cc",
+      "channel": 4,
+      "number": 2,
+      "mode": "cc14",
+      "deviceName": "DDJ-FLX4"
+    },
+    {
+      "target": "fx.on",
+      "kind": "note",
+      "channel": 4,
+      "number": 71,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    },
+    {
+      "target": "fx.on",
+      "kind": "note",
+      "channel": 5,
+      "number": 71,
+      "mode": "absolute",
+      "deviceName": "DDJ-FLX4",
+      "feedback": false
+    }
+  ]
+}

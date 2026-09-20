@@ -46,6 +46,7 @@ export class AudioEngine extends EventTarget{
  play(deck,on){this.playing[deck]=on;this.send({type:'play',deck,on});}
  seek(deck,position){this.positions[deck]=position;this.send({type:'seek',deck,position});}
  scratch(deck,active,speed=0){this.send({type:'scratch',deck,active,speed});}
+ scratchMove(deck,seconds){this.send({type:'scratchMove',deck,seconds});}
  roll(deck,on,start,end){this.send({type:'roll',deck,on,start,end});}
  applyDeck(i,d,bpm=120){
   this.send({type:'params',deck:i,...d});const n=this.channels[i];if(!n)return;const db=v=>Math.pow(10,v/20);this.param(n.trim.gain,db(d.gain));this.param(n.low.gain,d.low);this.param(n.mid.gain,d.mid);this.param(n.high.gain,d.high);this.param(n.volume.gain,d.volume);this.param(n.cue.gain,d.cueOn?1:0);

@@ -4,9 +4,11 @@ import {normalizeTempoMap,beatAtTime,timeAtBeat,bpmAtTime,phaseDifference} from 
  * The granular mode is experimental and is not equivalent to commercial DSP.
  */
 const N=2048,H=N/2;
+// Consume 99% of a normal jog movement in about 10 ms, independent of MIDI packet timing.
+const scratchFollow=1-Math.exp(-1/(sampleRate*.002));
 const win=new Float32Array(N);for(let i=0;i<N;i++)win[i]=.5-.5*Math.cos(2*Math.PI*i/N);
 const wrap=(x,n)=>((x%n)+n)%n;
-function makeDeck(){return {id:null,pos:0,playing:false,speed:1,pitch:1,keyLock:false,reverse:false,loop:false,start:0,end:0,slip:false,ghost:0,scratch:false,scratchRate:0,gain:0,grainPhase:0,g1:0,g2:0,reset:true,roll:false,rollGhost:0,rollState:null,tempoMap:normalizeTempoMap(),syncMaster:-1,syncRate:1,syncState:'off',alignmentReference:new Float32Array(96)};}
+function makeDeck(){return {id:null,pos:0,playing:false,speed:1,pitch:1,keyLock:false,reverse:false,loop:false,start:0,end:0,slip:false,ghost:0,scratch:false,scratchRate:0,scratchPending:null,gain:0,grainPhase:0,g1:0,g2:0,reset:true,roll:false,rollGhost:0,rollState:null,tempoMap:normalizeTempoMap(),syncMaster:-1,syncRate:1,syncState:'off',alignmentReference:new Float32Array(96)};}
 class OrbitProcessor extends AudioWorkletProcessor{
  constructor(){super();this.tracks=new Map();this.decks=Array.from({length:4},makeDeck);this.voices=Array.from({length:16},()=>({on:false,slot:-1,id:null,pos:0,end:0,start:0,gain:1,loop:false}));this.blockPositions=new Float64Array(4);this.blockRates=new Float64Array(4);this.frames=0;this.report=0;this.port.onmessage=e=>this.command(e.data);}
  command(m){
@@ -32,8 +34,25 @@ class OrbitProcessor extends AudioWorkletProcessor{
   }
   if(m.type==='load'){Object.assign(d,makeDeck(),{id:m.id,pos:m.position*(this.tracks.get(m.id)?.sr||sampleRate)});return;}
   if(m.type==='play'){if(m.on&&t&&d.pos>=t.length)d.pos=0;d.playing=m.on;d.ghost=d.pos;d.reset=true;return;}
-  if(m.type==='seek'){d.pos=Math.max(0,Math.min((t?.length||0)-1,m.position*(t?.sr||sampleRate)));d.ghost=d.pos;d.reset=true;return;}
-  if(m.type==='scratch'){if(m.active&&!d.scratch)d.ghost=d.pos;if(!m.active&&d.scratch){if(d.slip)d.pos=d.ghost;d.reset=true;}d.scratch=m.active;d.scratchRate=Math.max(-8,Math.min(8,m.speed||0));return;}
+  if(m.type==='seek'){d.pos=Math.max(0,Math.min((t?.length||0)-1,m.position*(t?.sr||sampleRate)));d.ghost=d.pos;if(d.scratchPending!==null)d.scratchPending=0;d.reset=true;return;}
+  if(m.type==='scratch'){
+   if(m.active&&!d.scratch)d.ghost=d.pos;
+   if(!m.active&&d.scratch){
+    if(d.slip)d.pos=d.ghost;
+    else if(d.scratchPending!==null)d.pos+=d.scratchPending;
+    // Finish at the physical jog endpoint even when touch-up arrives before the
+    // smoothing tail. SLIP instead resumes its unheard timeline, wrapped/clamped.
+    if(d.scratchPending!==null){if(d.loop&&d.end>d.start)d.pos=d.start+wrap(d.pos-d.start,d.end-d.start);else if(t)d.pos=Math.max(0,Math.min(t.length-1,d.pos));}
+    d.reset=true;
+   }
+   d.scratch=m.active;d.scratchRate=Math.max(-8,Math.min(8,m.speed||0));d.scratchPending=null;return;
+  }
+  if(m.type==='scratchMove'){
+   if(!d.scratch||!t||!Number.isFinite(m.seconds))return;
+   const delta=m.seconds*t.sr,pending=(d.scratchPending??0)+delta;
+   if(!Number.isFinite(delta)||!Number.isFinite(pending))return;
+   d.scratchPending=pending;d.scratchRate=0;return;
+  }
   if(m.type==='roll'){if(m.on&&!d.roll){d.rollState={loop:d.loop,start:d.start,end:d.end};d.rollGhost=d.pos;d.roll=true;d.loop=true;d.start=m.start*(t?.sr||sampleRate);d.end=m.end*(t?.sr||sampleRate);d.pos=d.start;d.reset=true;}else if(!m.on&&d.roll){d.roll=false;d.pos=d.rollGhost;Object.assign(d,d.rollState);d.rollState=null;d.reset=true;}return;}
   if(m.type==='params'){if(d.keyLock!==!!m.keyLock||d.reverse!==!!m.reverse||Math.abs(d.pitch-Math.pow(2,(m.pitch||0)/12))>.0001)d.reset=true;d.speed=m.rate??d.speed;d.pitch=Math.pow(2,(m.pitch||0)/12);d.keyLock=!!m.keyLock;d.reverse=!!m.reverse;d.slip=!!m.slip;if(!d.roll){d.loop=!!m.loop?.enabled;d.start=(m.loop?.start||0)*(t?.sr||sampleRate);d.end=(m.loop?.end||0)*(t?.sr||sampleRate);}}
  }
@@ -70,10 +89,11 @@ class OrbitProcessor extends AudioWorkletProcessor{
  process(_,outputs){
   const len=outputs[0]?.[0]?.length||128;this.updateSync();
   for(let di=0;di<4;di++){
-   const d=this.decks[di],t=this.tracks.get(d.id),out=outputs[di];if(!out?.[0]||!t)continue;const l=out[0],r=out[1]||out[0],ratio=t.sr/sampleRate,dir=d.reverse?-1:1;let speed=(d.scratch?d.scratchRate:this.blockRates[di]*dir)*ratio;const pitch=(d.keyLock?d.pitch:this.blockRates[di]*d.pitch)*dir*ratio;const granular=!d.scratch&&(d.keyLock||Math.abs(d.pitch-1)>.0001)&&Math.abs(pitch-speed)>.0001;
+   const d=this.decks[di],t=this.tracks.get(d.id),out=outputs[di];if(!out?.[0]||!t)continue;const l=out[0],r=out[1]||out[0],ratio=t.sr/sampleRate,dir=d.reverse?-1:1,distanceScratch=d.scratch&&d.scratchPending!==null;let speed=(d.scratch?d.scratchRate:this.blockRates[di]*dir)*ratio;const pitch=(d.keyLock?d.pitch:this.blockRates[di]*d.pitch)*dir*ratio;const granular=!d.scratch&&(d.keyLock||Math.abs(d.pitch-1)>.0001)&&Math.abs(pitch-speed)>.0001;
    if(d.reset){d.g1=d.pos;d.g2=d.pos;d.grainPhase=0;d.reset=false;}
    for(let i=0;i<len;i++){
-    const active=d.scratch?Math.abs(speed)>.00001:d.playing;const target=active?1:0;d.gain+=(target-d.gain)*.035;
+    if(distanceScratch){const pending=d.scratchPending;speed=Math.abs(pending)<.000001?pending:Math.max(-8*ratio,Math.min(8*ratio,pending*scratchFollow));d.scratchPending-=speed;}
+    const active=d.scratch?(distanceScratch?speed!==0:Math.abs(speed)>.00001):d.playing;const target=active?1:0;d.gain+=(target-d.gain)*.035;
     if(d.playing&&d.scratch)d.ghost+=this.blockRates[di]*dir*ratio;if(d.playing&&d.roll)d.rollGhost+=this.blockRates[di]*dir*ratio;
     if(!active&&d.gain<.00001)continue;
     let a,b;
@@ -82,7 +102,7 @@ class OrbitProcessor extends AudioWorkletProcessor{
     // Freeze a stopped transport while the short output envelope closes.
     if(active)d.pos+=speed;
     if(d.loop&&d.end>d.start){if(d.pos>=d.end||d.pos<d.start)d.pos=d.start+wrap(d.pos-d.start,d.end-d.start);}
-    else if(d.pos>=t.length-1||d.pos<0){d.pos=Math.max(0,Math.min(t.length-1,d.pos));if(d.playing){d.playing=false;this.port.postMessage({type:'ended',deck:di});}d.gain=0;}
+    else if(d.pos>=t.length-1||d.pos<0){d.pos=Math.max(0,Math.min(t.length-1,d.pos));if(distanceScratch)d.scratchPending=0;else if(d.playing){d.playing=false;this.port.postMessage({type:'ended',deck:di});}d.gain=0;}
    }
   }
   const sampleOut=outputs[4];if(sampleOut?.[0])for(const v of this.voices){if(!v.on)continue;const t=this.tracks.get(v.id);if(!t){v.on=false;continue;}for(let i=0;i<len;i++){if(v.pos>=v.end){if(v.loop)v.pos=v.start+wrap(v.pos-v.start,v.end-v.start);else{v.on=false;break;}}const fade=Math.min(1,(v.pos-v.start)/128,(v.end-v.pos)/128);sampleOut[0][i]+=this.read(t,0,v.pos)*v.gain*fade;if(sampleOut[1])sampleOut[1][i]+=this.read(t,1,v.pos)*v.gain*fade;v.pos+=t.sr/sampleRate;}}

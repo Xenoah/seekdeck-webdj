@@ -1,4 +1,6 @@
 import {validTarget} from './core.js';
+import {DDJFLX4_PROFILE} from './ddj-flx4-profile.js';
+export {DDJFLX4_PROFILE} from './ddj-flx4-profile.js';
 
 export const PROFILE_FORMAT='seekdeck-controller';
 export const MAX_MAPPINGS=1000;
@@ -14,6 +16,8 @@ export function validMIDIMapping(m){
  if(!MODES.includes(mode)||mode==='cc14'&&(m.kind!=='cc'||m.number>31)||m.kind==='pitchbend'&&(m.number!==0||mode!=='absolute'))return false;
  if(!text(m.device,256)||!text(m.inputId,256)||!text(m.deviceName,128)||m.invert!==undefined&&typeof m.invert!=='boolean')return false;
  if(m.center!==undefined&&(!unit(m.center)||mode.startsWith('relative')||m.kind==='note'))return false;
+ if(m.jogMode!==undefined&&(!m.target.endsWith('.jog')||!mode.startsWith('relative')||!['touch','bend','vinyl-off','seek'].includes(m.jogMode)))return false;
+ if(m.sensitivity!==undefined&&(!m.target.endsWith('.jog')||!mode.startsWith('relative')||typeof m.sensitivity!=='number'||!Number.isFinite(m.sensitivity)||m.sensitivity<=0||m.sensitivity>10))return false;
  if(m.feedback!==undefined&&m.feedback!==false){const f=m.feedback;if(!plain(f)||!['note','cc'].includes(f.kind)||!integer(f.channel,0,15)||!integer(f.number,0,127)||!integer(f.on,0,127)||!integer(f.off,0,127))return false;}
  return true;
 }
@@ -24,7 +28,7 @@ export function validHIDMapping(m){
 }
 function cleanMIDI(m){
  const result={target:m.target,kind:m.kind,channel:m.channel,number:m.number,mode:m.mode??'absolute',invert:!!m.invert};
- for(const k of ['device','deviceName','inputId','center'])if(m[k]!==undefined)result[k]=m[k];
+ for(const k of ['device','deviceName','inputId','center','jogMode','sensitivity'])if(m[k]!==undefined)result[k]=m[k];
  if(m.feedback!==undefined)result.feedback=m.feedback===false?false:{kind:m.feedback.kind,channel:m.feedback.channel,number:m.feedback.number,on:m.feedback.on,off:m.feedback.off};
  return result;
 }
@@ -57,4 +61,4 @@ for(let d=0;d<2;d++){
 }
 for(const [key,n]of [['crossfader',31],['master',8],['cueMix',12],['headphone',13]])add(`mixer.${key}`,'cc',6,n,{mode:'cc14',...(key==='crossfader'?{center:.5}:{})});
 export const DDJ400_PROFILE={format:PROFILE_FORMAT,version:1,name:'Pioneer DJ DDJ-400 · Basic',midiMappings};
-export const CONTROLLER_PRESETS=[{id:'ddj-400-basic',name:DDJ400_PROFILE.name,profile:DDJ400_PROFILE}];
+export const CONTROLLER_PRESETS=[{id:'ddj-flx4',name:DDJFLX4_PROFILE.name,profile:DDJFLX4_PROFILE},{id:'ddj-400-basic',name:DDJ400_PROFILE.name,profile:DDJ400_PROFILE}];
